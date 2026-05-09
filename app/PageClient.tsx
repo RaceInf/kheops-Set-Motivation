@@ -164,7 +164,7 @@ function Hero() {
       
       <div className="mt-24 md:mt-48 w-full border-t border-white/10 pt-8 flex justify-between items-center overflow-hidden h-12">
         <div className="text-[8px] md:text-[10px] uppercase tracking-[0.5em] text-white/20 whitespace-nowrap animate-marquee flex gap-12">
-          <span>SORTIE DE LA MATRICE</span>
+          <span>CONSTRUIS OU SUBIS</span>
           <span>•</span>
           <span>SOUVERAINETÉ FINANCIÈRE</span>
           <span>•</span>
@@ -172,15 +172,15 @@ function Hero() {
           <span>•</span>
           <span>ORDRE DU BÂTISSEUR</span>
           <span>•</span>
-          <span>SORTIE DE LA MATRICE</span>
+          <span>ZÉRO EXCUSE</span>
           <span>•</span>
-          <span>SOUVERAINETÉ FINANCIÈRE</span>
+          <span>ARCHITECTURE MENTALE</span>
           <span>•</span>
           <span>DISCIPLINE RADICALE</span>
           <span>•</span>
           <span>ORDRE DU BÂTISSEUR</span>
           <span>•</span>
-          <span>SORTIE DE LA MATRICE</span>
+          <span>CONSTRUIS OU SUBIS</span>
         </div>
       </div>
     </section>
