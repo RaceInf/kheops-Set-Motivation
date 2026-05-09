@@ -417,7 +417,9 @@ function Boutique() {
             
             <div className="relative z-10 flex flex-col h-full">
               <div className="mb-12">
-                <span className="text-gold text-[10px] font-mono tracking-widest px-3 py-1 border border-gold/20 rounded-full uppercase">Ref_{idx + 10}</span>
+                <span className="text-gold text-[10px] font-mono tracking-widest px-3 py-1 border border-gold/20 rounded-full uppercase">
+                  {idx === 0 ? "CODE" : idx === 1 ? "PROTOCOLE" : "CAPITAL"}
+                </span>
               </div>
               
               <div className="flex-grow flex flex-col justify-center">
