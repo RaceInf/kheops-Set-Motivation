@@ -13,8 +13,8 @@ export class TaraProvider implements PaymentProvider {
     this.apiKey = process.env.TARA_API_KEY || '';
     this.businessId = process.env.TARA_BUSINESS_ID || 'AU5F57fcg2';
     this.webhookSecret = process.env.TARA_WEBHOOK_SECRET || '';
-    // L'endpoint déprécié fourni dans la doc temporaire
-    this.apiUrl = 'https://www.dklo.co/api/tara/order';
+    // Nouvel endpoint de production fourni par Tara Money
+    this.apiUrl = 'https://www.dklo.co/api/tara/paymentlinks';
   }
 
   async createPaymentLink(order: OrderDetails): Promise<PaymentLinkResponse> {
