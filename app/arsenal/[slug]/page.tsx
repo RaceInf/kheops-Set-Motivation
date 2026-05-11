@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { tools } from "@/lib/data";
 import ArsenalCta from '@/components/ArsenalCta';
+import TrackViewContent from '@/components/analytics/TrackViewContent';
 import Footer from '@/components/Footer';
 import JsonLd from '@/components/seo/JsonLd';
 import { constructMetadata } from '@/lib/seo';
@@ -86,8 +87,15 @@ export default async function ToolPage({ params }: PageProps) {
     ]
   };
 
+  const numericPrice = parseInt(tool.price.replace(/\D/g, ''), 10) || 0;
+
   return (
     <>
+      <TrackViewContent 
+        contentName={tool.title} 
+        contentId={tool.id} 
+        value={numericPrice} 
+      />
       <JsonLd data={productSchema} />
       <JsonLd data={breadcrumbSchema} />
       <div className="min-h-screen bg-black text-white selection:bg-gold selection:text-black font-sans p-4 md:p-8 flex flex-col items-center">

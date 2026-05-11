@@ -3,6 +3,7 @@ import { Bebas_Neue, Inter } from 'next/font/google';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
+import FacebookPixel from '@/components/analytics/FacebookPixel';
 import './globals.css';
 
 const bebas = Bebas_Neue({ 
@@ -121,6 +122,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         )}
         <Suspense fallback={null}>
           <GoogleAnalytics />
+          <FacebookPixel />
         </Suspense>
         {children}
       </body>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import * as gtag from '@/lib/gtag';
+import * as fpixel from '@/lib/fpixel';
 
 export default function ArsenalCta({ 
   productId, 
@@ -92,7 +93,14 @@ export default function ArsenalCta({
 
   return (
     <button 
-      onClick={() => setShowEmailInput(true)}
+      onClick={() => {
+        setShowEmailInput(true);
+        fpixel.event('InitiateCheckout', {
+          content_name: title,
+          content_ids: [productId],
+          content_type: 'product',
+        });
+      }}
       className="w-full py-6 bg-gold text-black font-black text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors group flex justify-center items-center gap-3"
     >
       {cta}

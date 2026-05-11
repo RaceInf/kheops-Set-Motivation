@@ -40,7 +40,7 @@ export class TaraProvider implements PaymentProvider {
       const payload = {
         apiKey: this.apiKey,
         businessId: this.businessId,
-        productId: order.productId,
+        productId: `${order.productId}-${order.orderId.substring(0, 8)}`,
         productName: cleanString(order.productName),
         productPrice: order.productPrice,
         productDescription: cleanString(order.productDescription),
