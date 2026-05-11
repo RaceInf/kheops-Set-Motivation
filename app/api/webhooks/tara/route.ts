@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { taraProvider } from '@/lib/payments/tara';
+import { tools } from '@/lib/data';
 
 export async function POST(req: Request) {
   try {
@@ -107,15 +108,51 @@ export async function POST(req: Request) {
         })
         .eq('order_id', order.id);
 
-      // Update Order Record
+      // 6.2 Update Order Record
       await supabase
         .from('orders')
         .update({ status: 'PAID' })
         .eq('id', order.id);
 
-      // TODO: Trigger fulfillment here (e.g. send email with product link)
-      // For resilience, this should ideally be pushed to a queue (e.g. retry_jobs table)
-      // await supabase.from('retry_jobs').insert([{ type: 'send_fulfillment_email', order_id: order.id }])
+      // --- LIVRAISON PAR EMAIL (BREVO) ---
+      try {
+        // Récupérer les détails de la commande pour l'email
+        const { data: fullOrder } = await supabase
+          .from('orders')
+          .select(`
+            total_amount,
+            users (email),
+            order_items (product_id)
+          `)
+          .eq('id', order.id)
+          .single();
+
+        if (fullOrder) {
+          const customerEmail = (fullOrder.users as any)?.email;
+          const productId = (fullOrder.order_items as any)?.[0]?.product_id;
+          const tool = tools.find(t => t.id === productId);
+
+          if (customerEmail && tool) {
+            // Générer le lien de téléchargement signé (7 jours pour l'email)
+            const { data: signedUrlData } = await supabase.storage
+              .from('arsenal')
+              .createSignedUrl(tool.filePath!, 604800);
+
+            if (signedUrlData?.signedUrl) {
+              const { sendProductDeliveryEmail, sendAdminNotification } = await import('@/lib/email');
+              
+              // 1. Envoyer au client
+              await sendProductDeliveryEmail(customerEmail, tool.title, signedUrlData.signedUrl);
+              
+              // 2. Notifier l'admin
+              await sendAdminNotification(customerEmail, tool.title, fullOrder.total_amount);
+            }
+          }
+        }
+      } catch (emailError) {
+        console.error('Fulfillment Error (Email):', emailError);
+      }
+      // -----------------------------------
 
     } else if (paymentEvent.status === 'FAILED') {
       await supabase
