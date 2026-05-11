@@ -39,7 +39,7 @@ export default function SuccessClient({ status, orderId, amount, productName, do
             </h1>
             <p className="text-white/60 text-sm mb-8 leading-relaxed">
               Le protocole <span className="text-white font-bold">{productName}</span> a été débloqué. 
-              Vérifiez vos e-mails pour accéder à votre matériel.
+              Vous pouvez maintenant télécharger votre matériel ci-dessous.
             </p>
           </>
         ) : (
@@ -62,6 +62,17 @@ export default function SuccessClient({ status, orderId, amount, productName, do
           </>
         )}
 
+        <div className="flex flex-col gap-4 mt-8">
+          {isPaid && downloadUrl && (
+            <a
+              href={downloadUrl}
+              download
+              className="w-full py-4 bg-gold text-black font-black text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors flex justify-center items-center gap-3 shadow-[0_0_20px_rgba(238,177,73,0.3)] animate-pulse mb-4"
+            >
+              <Download className="w-4 h-4" /> TÉLÉCHARGER MON LIVRE
+            </a>
+          )}
+
           <Link
             href="/arsenal"
             className="w-full py-4 bg-white text-black font-black text-sm uppercase tracking-[0.2em] hover:bg-gold transition-colors flex justify-center items-center gap-3"
@@ -69,19 +80,9 @@ export default function SuccessClient({ status, orderId, amount, productName, do
             RETOURNER À L&apos;ARSENAL <ArrowRight className="w-4 h-4" />
           </Link>
           
-          {isPaid && downloadUrl && (
-            <a
-              href={downloadUrl}
-              download
-              className="w-full py-4 bg-gold text-black font-black text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors flex justify-center items-center gap-3 shadow-[0_0_20px_rgba(238,177,73,0.3)] animate-pulse"
-            >
-              <Download className="w-4 h-4" /> TÉLÉCHARGER MON LIVRE
-            </a>
-          )}
-
           <Link
             href="/"
-            className="text-[10px] text-white/40 uppercase tracking-widest hover:text-white transition-colors"
+            className="text-[10px] text-white/40 uppercase tracking-widest hover:text-white transition-colors mt-2"
           >
             RETOUR AU Q.G.
           </Link>
