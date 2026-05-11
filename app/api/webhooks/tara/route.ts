@@ -49,16 +49,24 @@ export async function POST(req: Request) {
     // 4. Parse the Payload
     const paymentEvent = taraProvider.parseWebhookPayload(payload);
 
-    if (!paymentEvent.orderId) {
+    // Si l'orderId n'est pas dans le body, on le récupère dans l'URL (query param)
+    const url = new URL(req.url);
+    const orderIdFromUrl = url.searchParams.get('orderId');
+    const orderId = paymentEvent.orderId || orderIdFromUrl;
+
+    if (!orderId) {
       // If we couldn't map an orderId, we can't process it.
       if (webhookEvent) {
         await supabase.from('webhook_events').update({ 
           status: 'FAILED', 
-          error_message: 'No orderId found in payload' 
+          error_message: 'No orderId found in payload or URL' 
         }).eq('id', webhookEvent.id);
       }
       return NextResponse.json({ error: 'Unprocessable Entity: Missing orderId' }, { status: 422 });
     }
+
+    // On s'assure que paymentEvent a le bon orderId pour la suite
+    paymentEvent.orderId = orderId;
 
     // 5. Check Idempotency (Has this order already been paid?)
     const { data: order, error: orderFetchError } = await supabase
