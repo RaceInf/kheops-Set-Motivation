@@ -23,8 +23,14 @@ export class TaraProvider implements PaymentProvider {
     }
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kheopsetmotivation.com';
       
+      // Tara exige impérativement du HTTPS. 
+      // Si on est en local, on utilise le domaine de prod comme fallback pour générer le lien.
+      const taraBaseUrl = baseUrl.includes('localhost') 
+        ? 'https://kheopsetmotivation.com' 
+        : baseUrl.replace('http://', 'https://');
+
       // On passe l'orderId dans l'URL de retour/webhook pour faire le lien plus tard
       const payload = {
         apiKey: this.apiKey,
@@ -34,11 +40,13 @@ export class TaraProvider implements PaymentProvider {
         productPrice: order.productPrice,
         productDescription: order.productDescription,
         // Fallback si pas d'image
-        productPictureUrl: order.productPictureUrl || `${baseUrl}/logo.png`, 
+        productPictureUrl: order.productPictureUrl?.startsWith('http') 
+          ? order.productPictureUrl.replace('http://', 'https://')
+          : `${taraBaseUrl}/logo.png`, 
         // On renvoie l'utilisateur vers une page de succès avec l'ID
-        returnUrl: `${baseUrl}/arsenal/success?order=${order.orderId}`,
-        // Le webhook inclut l'orderId en query param (ou on le récupère via le payload Tara s'il le renvoie)
-        webHookUrl: `${baseUrl}/api/webhooks/tara?orderId=${order.orderId}`
+        returnUrl: `${taraBaseUrl}/arsenal/success?order=${order.orderId}`,
+        // Le webhook inclut l'orderId en query param
+        webHookUrl: `${taraBaseUrl}/api/webhooks/tara?orderId=${order.orderId}`
       };
 
       const response = await fetch(this.apiUrl, {
@@ -57,7 +65,7 @@ export class TaraProvider implements PaymentProvider {
 
       const data = await response.json();
 
-      if (data.status === 'success' && data.generalLink) {
+      if (data.status?.toLowerCase() === 'success' && data.generalLink) {
         return {
           success: true,
           paymentUrl: data.generalLink,
@@ -105,9 +113,10 @@ export class TaraProvider implements PaymentProvider {
     // TODO: Mapper exactement selon le payload webhook envoyé par Tara (nouvelle API).
     // Structure hypothétique basée sur les standards du marché.
     
-    const status = payload.status === 'paid' || payload.status === 'success' 
+    const taraStatus = payload.status?.toLowerCase();
+    const status = taraStatus === 'paid' || taraStatus === 'success' 
       ? 'SUCCESS' 
-      : payload.status === 'failed' 
+      : taraStatus === 'failed' 
         ? 'FAILED' 
         : 'PENDING';
 
