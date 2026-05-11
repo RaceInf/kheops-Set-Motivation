@@ -31,18 +31,25 @@ export class TaraProvider implements PaymentProvider {
         ? 'https://kheopsetmotivation.com' 
         : baseUrl.replace('http://', 'https://');
 
+      // Fonction pour nettoyer les accents car l'API Tara semble avoir des soucis d'encodage (UTF-8 vs Latin-1)
+      const cleanString = (str: string) => {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      };
+
       // On passe l'orderId dans l'URL de retour/webhook pour faire le lien plus tard
       const payload = {
         apiKey: this.apiKey,
         businessId: this.businessId,
         productId: order.productId,
-        productName: order.productName,
+        productName: cleanString(order.productName),
         productPrice: order.productPrice,
-        productDescription: order.productDescription,
-        // Fallback si pas d'image
-        productPictureUrl: order.productPictureUrl?.startsWith('http') 
-          ? order.productPictureUrl.replace('http://', 'https://')
-          : `${taraBaseUrl}/logo.png`, 
+        productDescription: cleanString(order.productDescription),
+        // Fallback si pas d'image ou si image en localhost
+        productPictureUrl: order.productPictureUrl?.includes('localhost')
+          ? order.productPictureUrl.replace(/http:\/\/localhost:\d+/, 'https://kheopsetmotivation.com')
+          : (order.productPictureUrl?.startsWith('http') 
+              ? order.productPictureUrl.replace('http://', 'https://')
+              : `${taraBaseUrl}/logo.png`), 
         // On renvoie l'utilisateur vers une page de succès avec l'ID
         returnUrl: `${taraBaseUrl}/arsenal/success?order=${order.orderId}`,
         // Le webhook inclut l'orderId en query param
@@ -52,7 +59,7 @@ export class TaraProvider implements PaymentProvider {
       const response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: JSON.stringify(payload),
       });
