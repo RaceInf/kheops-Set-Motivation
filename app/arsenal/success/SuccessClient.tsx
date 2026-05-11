@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { CheckCircle2, ArrowRight, Loader2, Download } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import TrackPurchase from '@/components/analytics/TrackPurchase';
 
 interface SuccessClientProps {
@@ -12,8 +14,41 @@ interface SuccessClientProps {
   downloadUrl?: string | null;
 }
 
-export default function SuccessClient({ status, orderId, amount, productName, downloadUrl }: SuccessClientProps) {
+export default function SuccessClient({ 
+  status: initialStatus, 
+  orderId, 
+  amount, 
+  productName, 
+  downloadUrl: initialDownloadUrl 
+}: SuccessClientProps) {
+  const [status, setStatus] = useState(initialStatus);
+  const [downloadUrl, setDownloadUrl] = useState(initialDownloadUrl);
+  const router = useRouter();
   const isPaid = status === 'PAID';
+
+  useEffect(() => {
+    // Si déjà payé, pas besoin de poll
+    if (isPaid) return;
+
+    // Polling toutes les 3 secondes
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/orders/${orderId}/status`);
+        const data = await res.json();
+        
+        if (data.status === 'PAID') {
+          setStatus('PAID');
+          clearInterval(interval);
+          // On force un refresh du Server Component pour obtenir le downloadUrl signé
+          router.refresh();
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isPaid, orderId, router]);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-gold selection:text-black font-sans p-4 md:p-8 flex flex-col items-center justify-center">
@@ -54,18 +89,13 @@ export default function SuccessClient({ status, orderId, amount, productName, do
               Nous attendons la confirmation de Tara Money. 
               Cette page s&apos;actualisera automatiquement dès que la transaction sera validée.
             </p>
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `setTimeout(() => window.location.reload(), 5000);`,
-              }}
-            />
           </>
         )}
 
         <div className="flex flex-col gap-4 mt-8">
-          {isPaid && downloadUrl && (
+          {isPaid && (downloadUrl || initialDownloadUrl) && (
             <a
-              href={downloadUrl}
+              href={downloadUrl || initialDownloadUrl || '#'}
               download
               className="w-full py-4 bg-gold text-black font-black text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors flex justify-center items-center gap-3 shadow-[0_0_20px_rgba(238,177,73,0.3)] animate-pulse mb-4"
             >
