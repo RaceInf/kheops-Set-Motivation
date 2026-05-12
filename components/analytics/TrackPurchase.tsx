@@ -15,6 +15,10 @@ export default function TrackPurchase({ orderId, value, currency, productName }:
     // Only track if orderId exists
     if (!orderId) return;
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[FB_PIXEL] TrackPurchase mounting for order:', orderId);
+    }
+
     fpixel.event('Purchase', {
       value: value,
       currency: currency,
