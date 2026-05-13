@@ -20,16 +20,16 @@ const PRODUITS = [
 ];
 
 const PHRASES = [
-  "Félicitations à ce Bâtisseur de {ville} pour l'achat de {produit}.",
-  "Un Bâtisseur de {ville} vient d'acquérir son exemplaire de {produit}.",
-  "Vient de rejoindre le chantier avec : {produit} ({ville}).",
-  "Investissement validé : {produit} pour un Bâtisseur de {ville}.",
-  "Direct de {ville} : Un Bâtisseur a choisi {produit} pour bâtir son empire.",
-  "Nouveau membre actif à {ville} avec : {produit}.",
-  "Un exemplaire de {produit} vient d'être expédié à {ville}.",
-  "Succès : {produit} a été choisi par un Bâtisseur de {ville}.",
-  "La communauté grandit à {ville} avec l'arrivée de {produit}.",
-  "Dernière commande : {produit} (Bâtisseur de {ville})."
+  "Et encore un ! {produit} vient d'être acquis à {ville}.",
+  "Un Bâtisseur de {ville} vient de débloquer son accès à {produit}.",
+  "Vient de passer à l'action avec : {produit} ({ville}).",
+  "Accès instantané activé : {produit} pour un Bâtisseur de {ville}.",
+  "Un exemplaire de {produit} rejoint la bibliothèque d'un membre à {ville}.",
+  "Nouveau téléchargement détecté : {produit} à {ville}.",
+  "La méthode {produit} se répand à {ville} : Nouvelle acquisition.",
+  "Accès immédiat débloqué pour un Bâtisseur de {ville} ({produit}).",
+  "Encore un membre de {ville} qui s'équipe avec {produit}.",
+  "Dernière acquisition : {produit} (Bâtisseur de {ville})."
 ];
 
 export default function SalesFlux() {
