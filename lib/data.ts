@@ -188,13 +188,14 @@ export const tools = [
       { name: "S. Diallo", role: "Freelance", text: "Je cherchais des techniques, j'ai trouvé une nouvelle façon de voir le monde. Le Code du Bâtisseur a complètement recalibré mon esprit." }
     ],
     summary: [
-      "Pilier 1 : La Responsabilité Radicale (Sortir du statut de victime)",
-      "Pilier 2 : La Loi du Silence Stratégique (Protéger ses plans)",
-      "Pilier 3 : Le Détachement Émotionnel (Garder la tête froide)",
-      "Pilier 4 : L'Obsession du Résultat (Mépriser l'effort inutile)",
-      "Pilier 5 : La Discipline du Fer (Le moteur de l'ascension)",
-      "Pilier 6 : La Souveraineté de l'Esprit (Rejeter la propagande)",
-      "Pilier 7 : L'Action Imparfaite et Violente (L'art de l'exécution)"
+      "La Responsabilité Radicale — Le pouvoir commence là où les excuses s'arrêtent.",
+      "L'Action Imparfaite — L'action désordonnée triomphe toujours de l'inaction parfaite.",
+      "La Discipline comme Système — Construire le moteur qui fonctionne quand les émotions sont à plat.",
+      "La Sagesse de l'Anticonformisme — Écouter sa boussole intérieure plutôt que le bruit de la foule.",
+      "La Vision à Long Terme — Équilibrer les besoins du présent et la construction de son héritage.",
+      "L'Application comme Pouvoir — Transformer l'information en compétence, le savoir en sagesse.",
+      "La Mentalité d'Abondance — La paix intérieure comme fondation de toute réussite extérieure.",
+      "Conclusion : Le Chantier ne finit jamais"
     ],
     faq: [
       { q: "Est-ce un livre pour m'aider à trouver ma passion ?", a: "Non. C'est un livre pour te réveiller. Si tu cherches de l'inspiration douce, ce n'est pas le bon endroit." },
@@ -238,10 +239,9 @@ export const tools = [
       { name: "D.", role: "Bâtisseur", text: "Brutal mais nécessaire. Ce protocole m'a permis de reprendre le contrôle de mes finances face à la pression sociétale et familiale immense." }
     ],
     summary: [
-      "Étape 1 : L'Audit des Parasites (Identifier les vampires énergétiques)",
-      "Étape 2 : Le Filtrage de Fer (Techniques de 'NON' sans culpabilité)",
-      "Étape 3 : La Désinfection Sociale (Bâtir son cercle de confiance)",
-      "Bonus : Le Guide de l'Isolement en Milieu Hostile (Famille et Travail)"
+      "Étape 1 — L'Audit Impitoyable du Cercle",
+      "Étape 2 — La Quarantaine Relationnelle (L'Art du Non)",
+      "Étape 3 — L'Aseptisation Digitale et Locale"
     ],
     faq: [
       { q: "C'est juste un guide pour dire non ?", a: "C'est un système profond de reprogrammation. Dire 'non' est la surface, la façon dont tu cadres les relations est la fondation." },
@@ -286,12 +286,18 @@ export const tools = [
       { name: "ABDOUL", role: "Fonctionnaire", text: "J'ai acheté le capital du Bâtisseur. C'est réellement un manuel impitoyable, très percutant" }
     ],
     summary: [
-      "Module 1 : La Fin de l'Illusion du Salaire (La vérité sur le contrat social)",
-      "Module 2 : Détruire la Loi de Parkinson (Combler les fuites financières)",
-      "Module 3 : Survivre à la Taxe du Sang (Gérer la pression familiale)",
-      "Module 4 : Stratégie de Décorrélation Temps/Argent (L'effet de levier)",
-      "Module 5 : De Consommateur à Propriétaire (L'accumulation d'actifs)",
-      "Module 6 : La Psychologie du Chiffre (Garder plus pour bâtir plus)"
+      "Partie 1 — LA DÉFENSE : Boucher les Trous du Seau",
+      "Ch. 1 — Le Suicide du Paraître : l'obsession du statut social.",
+      "Ch. 2 — La Taxe du Sang (Black Tax) : sauver sa famille en lui disant NON.",
+      "Ch. 3 — La Dette et l'Esclavage Volontaire : le crédit conso comme prison.",
+      "Partie 2 — L'OFFENSIVE : La Mécanique de l'Argent",
+      "Ch. 4 — L'Actif et le Passif : la distinction qui sépare les Rois des esclaves.",
+      "Ch. 5 — Le Mythe du Petit Salaire : la loi de Parkinson et l'algorithme d'épargne.",
+      "Ch. 6 — Décorréler le Temps et l'Argent : l'évasion du salariat par l'effet de levier.",
+      "Partie 3 — L'ARMURE : Protéger son édifice et assumer sa valeur",
+      "Ch. 7 — La Brutalité du Marché : pourquoi l'eau est gratuite et le diamant hors de prix.",
+      "Ch. 8 — L'Isolement Stratégique : survivre au panier de crabes.",
+      "Conclusion — Le Premier Jour de l'Empire : Plan d'action pour les 48h."
     ],
     faq: [
       { q: "Est-ce un livre technique sur l'investissement boursier ?", a: "Non. C'est l'étape avant l'investissement boursier. C'est la structure mentale et systémique pour retenir et multiplier l'argent gagné." },
