@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { tools } from "@/lib/data";
 import ArsenalCta from '@/components/ArsenalCta';
+import SummaryCarousel from '@/components/SummaryCarousel';
 import TrackViewContent from '@/components/analytics/TrackViewContent';
 import Footer from '@/components/Footer';
 import JsonLd from '@/components/seo/JsonLd';
@@ -173,18 +174,24 @@ export default async function ToolPage({ params }: PageProps) {
                 <div className="bg-gold text-black px-3 py-1 font-black text-xs uppercase tracking-tighter">Plan de Transmission</div>
                 <h2 className="font-display text-3xl md:text-4xl uppercase tracking-tighter">Sommaire Stratégique</h2>
               </div>
-              <div className="grid grid-cols-1 gap-1 border border-white/10 bg-white/5 p-1">
-                {tool.summary.map((item, idx) => (
-                  <div key={idx} className="group flex items-center justify-between p-4 md:p-6 bg-black hover:bg-zinc-900 transition-colors border border-white/5">
-                    <div className="flex items-center gap-6">
-                      <span className="font-display text-2xl text-gold/30 group-hover:text-gold transition-colors">{(idx + 1).toString().padStart(2, '0')}</span>
-                      <span className="text-white/80 font-bold text-sm md:text-base uppercase tracking-wide">{item}</span>
+              
+              {tool.id === 'le-capital-du-batisseur' ? (
+                <SummaryCarousel items={tool.summary} />
+              ) : (
+                <div className="grid grid-cols-1 gap-1 border border-white/10 bg-white/5 p-1">
+                  {tool.summary.map((item, idx) => (
+                    <div key={idx} className="group flex items-center justify-between p-4 md:p-6 bg-black hover:bg-zinc-900 transition-colors border border-white/5">
+                      <div className="flex items-center gap-6">
+                        <span className="font-display text-2xl text-gold/30 group-hover:text-gold transition-colors">{(idx + 1).toString().padStart(2, '0')}</span>
+                        <span className="text-white/80 font-bold text-sm md:text-base uppercase tracking-wide">{item}</span>
+                      </div>
+                      <div className="hidden md:block h-[1px] flex-grow mx-8 bg-white/5" />
+                      <Shield className="w-4 h-4 text-white/20 group-hover:text-gold transition-colors hidden md:block" />
                     </div>
-                    <div className="hidden md:block h-[1px] flex-grow mx-8 bg-white/5" />
-                    <Shield className="w-4 h-4 text-white/20 group-hover:text-gold transition-colors hidden md:block" />
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
+              
               <p className="mt-6 text-[10px] text-white/30 uppercase tracking-[0.2em] italic font-medium">
                 * Chaque module est conçu pour une application immédiate sur le terrain.
               </p>

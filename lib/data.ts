@@ -163,6 +163,7 @@ export const tools = [
     checkoutUrl: "https://fovqbyzx.mychariow.shop/codedubatisseur/checkout",
     content: "Un guide inspiré par la communauté Kheops Set Motivation. Ce livre n'aurait jamais dû exister. Il n'est le fruit d'aucune grande maison d'édition, ni de la vision isolée d'un gourou autoproclamé. Il est né du bruit, de la fureur et des conversations profondes de centaines de milliers d'âmes connectées.",
     image: "/images/le-code-du-batisseur.webp",
+    mockupImage: "/images/mockup-le-code.webp",
     recognition: [
       "Vous avez l'impression de stagner malgré vos efforts.",
       "Vous êtes fatigué des discours lisses et pleins de fausse bienveillance.",
@@ -214,6 +215,7 @@ export const tools = [
     checkoutUrl: "https://fovqbyzx.mychariow.shop/protocole-isolation/checkout",
     content: "Outil de Haute Qualité pour Bâtisseurs Épuisés. Vous rentrez le soir et vous rentrez vide. Ce n’est pas le travail qui vous a épuisé. C’est la complaisance. Chaque « Oui » dit par politesse à une personne toxique est un coup de poignard porté à votre propre avenir.",
     image: "/images/le-protocole-disolation.webp",
+    mockupImage: "/images/mockup-le-protocole.webp",
     recognition: [
       "Votre famille ou vos 'amis' vous sollicitent financièrement dès que vous gagnez un peu.",
       "Vous culpabilisez à l'idée de dire NON et vous vous sacrifiez pour les autres.",
@@ -260,6 +262,7 @@ export const tools = [
     checkoutUrl: "https://fovqbyzx.mychariow.shop/captaldubatisseur/checkout",
     content: "Reprendre le contrôle de son argent, de son entourage et de son avenir. Ce livre est l'arsenal lourd de cette philosophie. Il a été conçu pour être un outil chirurgical, froid et efficace, débarrassé de toute la « bienveillance toxique » qui vous maintient dans le confort de l'échec.",
     image: "/images/le-capital-du-batisseur.webp",
+    mockupImage: "/images/mockup-le-capital.webp",
     recognition: [
       "Vous gagnez de l'argent mais à la fin du mois, les comptes sont toujours vides.",
       "Vous subissez la 'Black Tax' (Taxe du Sang) de votre entourage étendu.",
@@ -286,17 +289,17 @@ export const tools = [
       { name: "ABDOUL", role: "Fonctionnaire", text: "J'ai acheté le capital du Bâtisseur. C'est réellement un manuel impitoyable, très percutant" }
     ],
     summary: [
-      "Partie 1 — LA DÉFENSE : Boucher les Trous du Seau",
-      "Ch. 1 — Le Suicide du Paraître : l'obsession du statut social.",
-      "Ch. 2 — La Taxe du Sang (Black Tax) : sauver sa famille en lui disant NON.",
-      "Ch. 3 — La Dette et l'Esclavage Volontaire : le crédit conso comme prison.",
-      "Partie 2 — L'OFFENSIVE : La Mécanique de l'Argent",
-      "Ch. 4 — L'Actif et le Passif : la distinction qui sépare les Rois des esclaves.",
-      "Ch. 5 — Le Mythe du Petit Salaire : la loi de Parkinson et l'algorithme d'épargne.",
-      "Ch. 6 — Décorréler le Temps et l'Argent : l'évasion du salariat par l'effet de levier.",
-      "Partie 3 — L'ARMURE : Protéger son édifice et assumer sa valeur",
-      "Ch. 7 — La Brutalité du Marché : pourquoi l'eau est gratuite et le diamant hors de prix.",
-      "Ch. 8 — L'Isolement Stratégique : survivre au panier de crabes.",
+      "Boucher les trous du seau",
+      "CH. 1 — Le Suicide du Paraître : l'obsession du statut social.",
+      "CH. 2 — La Taxe du Sang (Black Tax) : sauver sa famille en lui disant NON.",
+      "CH. 3 — La Dette et l'Esclavage Volontaire : le crédit conso comme prison.",
+      "La mécanique de l'argent",
+      "CH. 4 — L'Actif et le Passif : la distinction qui sépare les Rois des esclaves.",
+      "CH. 5 — Le Mythe du Petit Salaire : la loi de Parkinson et l'algorithme d'épargne.",
+      "CH. 6 — Décorréler le Temps et l'Argent : l'évasion du salariat par l'effet de levier.",
+      "Protéger son édifice et assumer sa valeur",
+      "CH. 7 — La Brutalité du Marché : pourquoi l'eau est gratuite et le diamant hors de prix.",
+      "CH. 8 — L'Isolement Stratégique : survivre au panier de crabes.",
       "Conclusion — Le Premier Jour de l'Empire : Plan d'action pour les 48h."
     ],
     faq: [
