@@ -35,7 +35,7 @@ export default function WhatsAppWidget() {
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <div className="w-12 h-12 rounded-full border-2 border-gold flex items-center justify-center bg-black overflow-hidden">
-                     <span className="text-gold font-display text-xl font-black">KS</span>
+                    <span className="text-gold font-display text-xl font-black">KS</span>
                   </div>
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
                 </div>
@@ -44,7 +44,7 @@ export default function WhatsAppWidget() {
                   <p className="text-green-500 text-[10px] font-bold uppercase tracking-widest mt-1">En ligne • Réponse rapide</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setIsOpen(false)}
                 className="text-white/40 hover:text-white transition-colors"
               >
@@ -64,10 +64,9 @@ export default function WhatsAppWidget() {
               <div className="space-y-3">
                 <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold mb-4">Assistance Boutique</p>
                 {[
-                  { label: "Je n'ai pas reçu mon mail", msg: "Bonjour l'équipe KSM, j'ai fait un achat mais je n'ai pas encore reçu mon mail de téléchargement." },
-                  { label: "Mon paiement a échoué", msg: "Salut, j'ai tenté de payer via Orange/MTN mais ça n'a pas fonctionné. Comment faire ?" },
-                  { label: "Lequel choisir pour moi ?", msg: "Bonjour, j'hésite entre plusieurs outils de l'Arsenal. Lequel me conseillez-vous pour débuter ?" },
-                  { label: "Parler à l'équipe", msg: "Bonjour, je souhaite échanger avec un membre de l'équipe Kheops Set." }
+                  { label: "Accès à mon produit", msg: "Bonjour l'équipe KSM, j'ai fait un achat mais je n'ai pas encore reçu mon mail de téléchargement." },
+                  { label: "Problème avec un paiement", msg: "Salut, j'ai tenté de payer mais ça n'a pas fonctionné. Comment faire ?" },
+                  { label: "Lequel choisir pour moi ?", msg: "Bonjour, j'hésite entre plusieurs outils de l'Arsenal. Lequel me conseillez-vous pour débuter ?" }
                 ].map((item, i) => (
                   <a
                     key={i}
@@ -90,7 +89,7 @@ export default function WhatsAppWidget() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 w-full py-4 bg-gold text-black font-black text-xs uppercase tracking-[0.2em] hover:bg-white transition-all duration-500 shadow-[0_10px_20px_rgba(238,177,73,0.2)]"
               >
-                <MessageCircle className="w-4 h-4" /> Démarrer la discussion
+                <MessageCircle className="w-4 h-4" /> Poser une question
               </a>
             </div>
           </motion.div>
@@ -109,7 +108,7 @@ export default function WhatsAppWidget() {
       >
         {/* Glow effect */}
         <div className="absolute inset-0 bg-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        
+
         {isOpen ? (
           <X className="w-8 h-8 text-gold" />
         ) : (
