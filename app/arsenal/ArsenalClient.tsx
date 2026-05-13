@@ -96,9 +96,16 @@ export default function ArsenalClient() {
 
               <div className="p-8 flex flex-col flex-grow">
                 <div className="relative z-10 flex justify-between items-start mb-6">
-                  <h3 className="text-xs font-bold tracking-widest uppercase">
-                    Boutique Digitale
-                  </h3>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-xs font-bold tracking-widest uppercase">
+                      Boutique Digitale
+                    </h3>
+                    {(product as any).isBestSeller && (
+                      <div className="flex items-center gap-1.5 bg-gold px-2 py-0.5 w-fit animate-pulse">
+                        <span className="text-[9px] font-black uppercase tracking-tighter text-black">RECOMMANDÉ</span>
+                      </div>
+                    )}
+                  </div>
                   <span className="text-gold text-[10px] font-mono">
                     [DISPONIBLE]
                   </span>

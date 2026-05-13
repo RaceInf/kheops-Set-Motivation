@@ -22,6 +22,8 @@ export default function PageClient() {
         <div className="h-32 md:h-64" /> {/* Spacer */}
         <Manifesto />
         <div className="h-32 md:h-64" /> {/* Spacer */}
+        <NetworkStats />
+        <div className="h-32 md:h-64" /> {/* Spacer */}
         <Blog />
         <div className="h-32 md:h-64" /> {/* Spacer */}
         <Boutique />
@@ -32,6 +34,36 @@ export default function PageClient() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+function NetworkStats() {
+  const stats = [
+    { label: "Bâtisseurs Engagés", value: "500K+", icon: Users },
+    { label: "Villes Connectées", value: "48+", icon: Target },
+    { label: "Unités de Transmission", value: "03", icon: Zap },
+    { label: "Status du Réseau", value: "OPÉRATIONNEL", icon: Shield },
+  ];
+
+  return (
+    <section className="w-full py-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 border border-white/10">
+        {stats.map((stat, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: idx * 0.1 }}
+            className="bg-black p-8 md:p-12 flex flex-col items-center text-center group hover:bg-zinc-900 transition-colors"
+          >
+            <stat.icon className="w-6 h-6 text-gold/40 mb-6 group-hover:text-gold transition-colors" />
+            <div className="font-display text-4xl md:text-6xl uppercase tracking-tighter mb-2">{stat.value}</div>
+            <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-white/30">{stat.label}</div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
   );
 }
 
