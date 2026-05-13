@@ -214,8 +214,8 @@ export const tools = [
     filePath: "le-protocole-disolation.pdf",
     checkoutUrl: "https://fovqbyzx.mychariow.shop/protocole-isolation/checkout",
     content: "Outil de Haute Qualité pour Bâtisseurs Épuisés. Vous rentrez le soir et vous rentrez vide. Ce n’est pas le travail qui vous a épuisé. C’est la complaisance. Chaque « Oui » dit par politesse à une personne toxique est un coup de poignard porté à votre propre avenir.",
-    image: "/images/le-protocole-disolation.webp",
-    mockupImage: "/images/mockup-le-protocole.webp",
+    image: "/images/mockup-le-protocole.webp",
+    mockupImage: "/images/le-protocole-disolation.webp",
     recognition: [
       "Votre famille ou vos 'amis' vous sollicitent financièrement dès que vous gagnez un peu.",
       "Vous culpabilisez à l'idée de dire NON et vous vous sacrifiez pour les autres.",
@@ -241,9 +241,9 @@ export const tools = [
       { name: "D.", role: "Bâtisseur", text: "Brutal mais nécessaire. Ce protocole m'a permis de reprendre le contrôle de mes finances face à la pression sociétale et familiale immense." }
     ],
     summary: [
-      "Étape 1 — L'Audit Impitoyable du Cercle",
-      "Étape 2 — La Quarantaine Relationnelle (L'Art du Non)",
-      "Étape 3 — L'Aseptisation Digitale et Locale"
+      "L'Audit Impitoyable du Cercle",
+      "La Quarantaine Relationnelle (L'Art du Non)",
+      "L'Aseptisation Digitale et Locale"
     ],
     faq: [
       { q: "C'est juste un guide pour dire non ?", a: "C'est un système profond de reprogrammation. Dire 'non' est la surface, la façon dont tu cadres les relations est la fondation." },
