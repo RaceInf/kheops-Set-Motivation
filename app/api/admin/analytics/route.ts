@@ -247,6 +247,25 @@ export async function GET(req: Request) {
       };
     });
 
+    // 10. Hourly distribution (last 30 days)
+    const { data: hourlyDistRaw } = await supabase
+      .from('page_views')
+      .select('created_at')
+      .gte('created_at', thirtyDaysAgo.toISOString());
+
+    const hourBucketsDist: Record<number, number> = {};
+    for (let h = 0; h < 24; h++) hourBucketsDist[h] = 0;
+    
+    (hourlyDistRaw || []).forEach(row => {
+      const hour = new Date(row.created_at).getHours();
+      hourBucketsDist[hour]++;
+    });
+
+    const hourlyDistribution = Object.entries(hourBucketsDist).map(([hour, count]) => ({
+      hour: parseInt(hour),
+      count
+    }));
+
     return NextResponse.json({
       kpis: {
         viewsToday: viewsToday || 0,
@@ -257,6 +276,7 @@ export async function GET(req: Request) {
       },
       chartData,
       revenueChartData,
+      hourlyDistribution,
       topPages,
       topReferrers,
       funnel: {
