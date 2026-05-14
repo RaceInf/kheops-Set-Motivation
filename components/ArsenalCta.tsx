@@ -97,13 +97,13 @@ export default function ArsenalCta({
             <input 
               type="tel" 
               required
-              placeholder="+237 ..."
+              placeholder="+ Indicatif ..."
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               className="w-full bg-black border border-white/10 p-4 text-sm focus:outline-none focus:border-gold transition-colors text-white"
               disabled={isLoading}
             />
-            <p className="text-[9px] text-white/20 italic">Exemple: +237 600 000 000</p>
+            <p className="text-[9px] text-white/20 italic">Format international (ex: +33, +237, +225...)</p>
           </div>
 
           {/* Champ Email */}
