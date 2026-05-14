@@ -102,7 +102,7 @@ export default function ArsenalCta({
               enableSearch={true}
               searchPlaceholder="Rechercher un pays..."
               searchNotFound="Aucun pays trouvé"
-              disableCountryCode={false}
+              countryCodeEditable={false}
               copyNumbersOnly={true}
               value={whatsapp}
               onChange={(phone) => setWhatsapp(phone)}
