@@ -25,7 +25,7 @@ export default function AdminLoginPage() {
       });
 
       if (res.ok) {
-        router.push('/admin-ksm');
+        router.push('/chantier-ksm7');
       } else {
         setError('Mot de passe incorrect.');
         setPassword('');
@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
             Kheops Set Motivation
           </div>
           <h1 className="font-display text-4xl uppercase tracking-tighter text-white">
-            Espace Admin
+            LE CHANTIER
           </h1>
         </div>
 

@@ -240,7 +240,7 @@ export default function AdminDashboardPage() {
             Dernières Ventes
           </h3>
           <a 
-            href="/admin-ksm/orders" 
+            href="/chantier-ksm7/orders" 
             className="text-[10px] text-gold uppercase tracking-widest hover:underline flex items-center gap-1"
           >
             Voir tout <ArrowUpRight className="w-3 h-3" />

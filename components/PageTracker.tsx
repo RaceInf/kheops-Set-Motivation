@@ -10,7 +10,7 @@ export default function PageTracker() {
 
   useEffect(() => {
     // Don't track admin pages
-    if (pathname.startsWith('/admin-ksm')) return;
+    if (pathname.startsWith('/chantier-ksm7')) return;
     // Don't double-track same page
     if (pathname === lastTracked.current) return;
 

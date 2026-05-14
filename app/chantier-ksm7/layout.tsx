@@ -9,12 +9,12 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { href: '/admin-ksm', label: 'Dashboard', icon: BarChart3 },
-  { href: '/admin-ksm/analytics', label: 'Analytique', icon: Eye },
-  { href: '/admin-ksm/orders', label: 'Commandes', icon: ShoppingBag },
-  { href: '/admin-ksm/leads', label: 'Leads', icon: Users },
-  { href: '/admin-ksm/webhooks', label: 'Webhooks', icon: Activity },
-  { href: '/admin-ksm/products', label: 'Produits', icon: Package },
+  { href: '/chantier-ksm7', label: 'Dashboard', icon: BarChart3 },
+  { href: '/chantier-ksm7/analytics', label: 'Analytique', icon: Eye },
+  { href: '/chantier-ksm7/orders', label: 'Commandes', icon: ShoppingBag },
+  { href: '/chantier-ksm7/leads', label: 'Leads', icon: Users },
+  { href: '/chantier-ksm7/webhooks', label: 'Webhooks', icon: Activity },
+  { href: '/chantier-ksm7/products', label: 'Produits', icon: Package },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -23,13 +23,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   // Don't show layout on login page
-  if (pathname === '/admin-ksm/login') {
+  if (pathname === '/chantier-ksm7/login') {
     return <>{children}</>;
   }
 
   const handleLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' });
-    router.push('/admin-ksm/login');
+    router.push('/chantier-ksm7/login');
   };
 
   return (
@@ -50,9 +50,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       `}>
         {/* Branding */}
         <div className="p-6 border-b border-white/10">
-          <Link href="/admin-ksm" className="flex flex-col">
+          <Link href="/chantier-ksm7" className="flex flex-col">
             <span className="text-gold text-[8px] font-bold tracking-[0.4em] uppercase">
-              Admin Panel
+              LE CHANTIER
             </span>
             <span className="font-display text-2xl uppercase tracking-tighter">
               Kheops<span className="text-gold">.</span>

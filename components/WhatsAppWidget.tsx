@@ -11,7 +11,7 @@ export default function WhatsAppWidget() {
   const [showNotification, setShowNotification] = useState(false);
 
   // Don't show on admin pages
-  if (pathname?.startsWith("/admin-ksm")) return null;
+  if (pathname?.startsWith("/chantier-ksm7")) return null;
 
   // Show notification after a short delay
   useEffect(() => {

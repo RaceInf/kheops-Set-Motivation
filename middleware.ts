@@ -4,13 +4,13 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Only protect /admin-ksm routes (except login page and API auth)
-  if (!pathname.startsWith('/admin-ksm')) {
+  // Only protect /chantier-ksm7 routes (except login page and API auth)
+  if (!pathname.startsWith('/chantier-ksm7')) {
     return NextResponse.next();
   }
 
   // Allow login page and auth API
-  if (pathname === '/admin-ksm/login' || pathname.startsWith('/api/admin/auth')) {
+  if (pathname === '/chantier-ksm7/login' || pathname.startsWith('/api/admin/auth')) {
     return NextResponse.next();
   }
 
@@ -18,14 +18,14 @@ export function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get('admin_session');
 
   if (!sessionCookie?.value) {
-    const loginUrl = new URL('/admin-ksm/login', request.url);
+    const loginUrl = new URL('/chantier-ksm7/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
 
   // Validate session format (token:timestamp)
   const parts = sessionCookie.value.split(':');
   if (parts.length !== 2) {
-    const loginUrl = new URL('/admin-ksm/login', request.url);
+    const loginUrl = new URL('/chantier-ksm7/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -34,7 +34,7 @@ export function middleware(request: NextRequest) {
 
   if (Date.now() - timestamp > maxAge) {
     // Session expired
-    const response = NextResponse.redirect(new URL('/admin-ksm/login', request.url));
+    const response = NextResponse.redirect(new URL('/chantier-ksm7/login', request.url));
     response.cookies.delete('admin_session');
     return response;
   }
@@ -43,5 +43,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin-ksm/:path*'],
+  matcher: ['/chantier-ksm7/:path*'],
 };

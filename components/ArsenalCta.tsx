@@ -97,7 +97,7 @@ export default function ArsenalCta({
             <input 
               type="tel" 
               required
-              placeholder="+237 ... ou +33 ..."
+              placeholder="+237 ..."
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               className="w-full bg-black border border-white/10 p-4 text-sm focus:outline-none focus:border-gold transition-colors text-white"

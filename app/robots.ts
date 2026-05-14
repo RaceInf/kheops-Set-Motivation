@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin/', '/admin-ksm/', '/_next/', '/static/'],
+        disallow: ['/api/', '/admin/', '/chantier-ksm7/', '/_next/', '/static/'],
       },
       {
         userAgent: ['GPTBot', 'ChatGPT-User', 'Claude-Web', 'anthropic-ai', 'PerplexityBot'],

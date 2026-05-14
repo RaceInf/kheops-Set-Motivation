@@ -42,7 +42,7 @@ export default function SalesFlux() {
   } | null>(null);
 
   // Don't show on admin pages
-  if (pathname?.startsWith("/admin-ksm")) return null;
+  if (pathname?.startsWith("/chantier-ksm7")) return null;
 
   const generateNotification = () => {
     const ville = VILLES[Math.floor(Math.random() * VILLES.length)];
