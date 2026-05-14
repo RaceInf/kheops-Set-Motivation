@@ -1,0 +1,45 @@
+import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get('status');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = 50;
+    const offset = (page - 1) * limit;
+
+    let query = supabase
+      .from('orders')
+      .select('id, created_at, total_amount, status, users(email), order_items(product_id)', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    const { data: orders, error, count } = await query;
+
+    if (error) throw error;
+
+    return NextResponse.json({
+      orders: (orders || []).map(o => ({
+        id: o.id,
+        date: o.created_at,
+        amount: o.total_amount,
+        status: o.status,
+        email: (o.users as any)?.email || 'N/A',
+        productId: (o.order_items as any)?.[0]?.product_id || 'N/A',
+      })),
+      total: count || 0,
+      page,
+      totalPages: Math.ceil((count || 0) / limit),
+    });
+  } catch (error) {
+    console.error('Admin orders error:', error);
+    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+  }
+}
