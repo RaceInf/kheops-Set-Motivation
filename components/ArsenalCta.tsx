@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { ArrowLeft, Loader2, Mail, User, MessageSquare } from "lucide-react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import * as gtag from '@/lib/gtag';
 import * as fpixel from '@/lib/fpixel';
 import { trackEvent } from '@/lib/analytics';
@@ -48,7 +50,7 @@ export default function ArsenalCta({
           productId, 
           userEmail: email,
           customerName: name,
-          whatsappNumber: whatsapp
+          whatsappNumber: whatsapp.startsWith('+') ? whatsapp : `+${whatsapp}`
         }),
       });
 
@@ -89,21 +91,79 @@ export default function ArsenalCta({
             />
           </div>
 
-          {/* Champ WhatsApp */}
-          <div className="flex flex-col gap-2">
+          {/* Champ WhatsApp avec Drapeaux */}
+          <div className="flex flex-col gap-2 ksm-phone-input">
             <label className="text-[10px] uppercase tracking-widest text-white/50 flex items-center gap-2">
-              <MessageSquare className="w-3 h-3 text-gold" /> Numéro WhatsApp (avec indicatif pays)
+              <MessageSquare className="w-3 h-3 text-gold" /> Numéro WhatsApp
             </label>
-            <input 
-              type="tel" 
-              required
-              placeholder="+ Indicatif ..."
+            <PhoneInput
+              country={"cm"}
+              preferredCountries={["cm", "fr", "ci", "sn", "be", "ch", "ca"]}
               value={whatsapp}
-              onChange={(e) => setWhatsapp(e.target.value)}
-              className="w-full bg-black border border-white/10 p-4 text-sm focus:outline-none focus:border-gold transition-colors text-white"
+              onChange={(phone) => setWhatsapp(phone)}
               disabled={isLoading}
+              containerClass="ksm-phone-container"
+              inputClass="ksm-phone-field"
+              buttonClass="ksm-phone-button"
+              dropdownClass="ksm-phone-dropdown"
+              placeholder="+237 ..."
+              inputProps={{
+                required: true,
+              }}
             />
-            <p className="text-[9px] text-white/20 italic">Format international (ex: +33, +237, +225...)</p>
+            
+            <style jsx global>{`
+              .ksm-phone-container {
+                width: 100% !important;
+                background: black !important;
+              }
+              .ksm-phone-field {
+                width: 100% !important;
+                height: 54px !important;
+                background: black !important;
+                color: white !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-radius: 0 !important;
+                font-size: 14px !important;
+                padding-left: 58px !important;
+                transition: border-color 0.2s !important;
+              }
+              .ksm-phone-field:focus {
+                border-color: #eeb149 !important;
+                box-shadow: none !important;
+              }
+              .ksm-phone-button {
+                background: rgba(255, 255, 255, 0.05) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-radius: 0 !important;
+                width: 48px !important;
+              }
+              .ksm-phone-button:hover, .ksm-phone-button.open {
+                background: rgba(255, 255, 255, 0.1) !important;
+              }
+              .ksm-phone-dropdown {
+                background: #09090b !important;
+                color: white !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-radius: 0 !important;
+                width: 300px !important;
+              }
+              .ksm-phone-dropdown .country:hover {
+                background: rgba(238, 177, 73, 0.1) !important;
+              }
+              .ksm-phone-dropdown .country.highlight {
+                background: rgba(238, 177, 73, 0.2) !important;
+              }
+              .ksm-phone-dropdown .country-name {
+                color: white !important;
+                font-size: 12px !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.05em !important;
+              }
+              .ksm-phone-dropdown .dial-code {
+                color: #eeb149 !important;
+              }
+            `}</style>
           </div>
 
           {/* Champ Email */}
@@ -156,6 +216,7 @@ export default function ArsenalCta({
           content_name: title,
           content_ids: [productId],
           content_type: 'product',
+          currency: 'XAF',
         });
         trackEvent('click_buy_button', { productId, title, source: 'product_page' });
       }}
