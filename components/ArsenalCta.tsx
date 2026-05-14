@@ -193,9 +193,14 @@ export default function ArsenalCta({
                 background-repeat: no-repeat !important;
                 background-position: 12px center !important;
               }
-              /* Hide default library search icon if present */
-              .ksm-phone-search .search-box-img {
+              /* Hide ALL default library search icons */
+              .ksm-phone-search .search-box-img,
+              .ksm-phone-search .search-icon,
+              .ksm-phone-search img,
+              .react-tel-input .search-box .search-icon {
                 display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
               }
               .ksm-phone-dropdown .country:hover {
                 background: rgba(238, 177, 73, 0.1) !important;
