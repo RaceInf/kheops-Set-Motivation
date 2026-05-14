@@ -92,17 +92,18 @@ export default function ArsenalCta({
           {/* Champ WhatsApp */}
           <div className="flex flex-col gap-2">
             <label className="text-[10px] uppercase tracking-widest text-white/50 flex items-center gap-2">
-              <MessageSquare className="w-3 h-3 text-gold" /> Numéro WhatsApp
+              <MessageSquare className="w-3 h-3 text-gold" /> Numéro WhatsApp (avec indicatif pays)
             </label>
             <input 
               type="tel" 
               required
-              placeholder="+237 ..."
+              placeholder="+237 ... ou +33 ..."
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               className="w-full bg-black border border-white/10 p-4 text-sm focus:outline-none focus:border-gold transition-colors text-white"
               disabled={isLoading}
             />
+            <p className="text-[9px] text-white/20 italic">Exemple: +237 600 000 000</p>
           </div>
 
           {/* Champ Email */}
