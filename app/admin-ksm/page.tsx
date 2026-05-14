@@ -13,6 +13,7 @@ interface StatsData {
     totalSales: number;
     averageOrder: number;
     pendingOrders: number;
+    revenueTrend: number;
   };
   revenueByDay: { date: string; revenue: number; count: number }[];
   productStats: Record<string, { count: number; revenue: number }>;
@@ -87,6 +88,7 @@ export default function AdminDashboardPage() {
       icon: DollarSign,
       color: 'text-emerald-400',
       bgColor: 'bg-emerald-400/10',
+      trend: data.kpis.revenueTrend,
     },
     { 
       label: 'Ventes confirmées', 
@@ -153,8 +155,15 @@ export default function AdminDashboardPage() {
                 <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
               </div>
             </div>
-            <div className="font-display text-2xl md:text-3xl tracking-tight">
-              {kpi.value}
+            <div className="flex flex-col gap-1">
+              <div className="font-display text-2xl md:text-3xl tracking-tight">
+                {kpi.value}
+              </div>
+              {kpi.trend !== undefined && (
+                <div className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 ${kpi.trend > 0 ? 'text-emerald-400' : kpi.trend < 0 ? 'text-red-400' : 'text-white/40'}`}>
+                  {kpi.trend > 0 ? '↑' : kpi.trend < 0 ? '↓' : '—'} {Math.abs(kpi.trend)}% vs 7 derniers jours
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -176,13 +185,13 @@ export default function AdminDashboardPage() {
                   <span className="text-[9px] text-white/40 font-mono">
                     {day.revenue > 0 ? formatCFA(day.revenue).replace(' FCFA', '') : '—'}
                   </span>
-                  <div className="w-full flex justify-center">
+                  <div className="w-full flex justify-center h-full items-end">
                     <div
-                      className="w-full max-w-12 bg-gold/20 hover:bg-gold/40 transition-colors relative group"
-                      style={{ height: `${Math.max(height, 4)}%` }}
+                      className="w-full max-w-16 bg-gradient-to-t from-gold/10 to-gold/40 hover:from-gold/20 hover:to-gold/60 border-t border-gold/50 transition-all relative group"
+                      style={{ height: `${Math.max(height, 2)}%` }}
                     >
                       {day.count > 0 && (
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[8px] text-gold font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black border border-white/10 px-2 py-1 text-[9px] text-gold font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl">
                           {day.count} vente{day.count > 1 ? 's' : ''}
                         </div>
                       )}

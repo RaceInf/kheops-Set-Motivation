@@ -40,7 +40,7 @@ export async function GET(req: Request) {
 
     // 5. Chart data based on range
     let chartData: { label: string; views: number }[] = [];
-    let rangeStart: Date;
+    let rangeStart: Date | undefined;
 
     if (range === 'today') {
       // Hourly for today
@@ -209,6 +209,41 @@ export async function GET(req: Request) {
       .gte('created_at', funnelRangeStart.toISOString())
       .eq('status', 'PAID');
 
+    // 9. Revenue Chart Data (12 months)
+    const yearAgo = new Date(now);
+    yearAgo.setMonth(yearAgo.getMonth() - 12);
+
+    const { data: paidOrdersYear } = await supabase
+      .from('orders')
+      .select('total_amount, created_at')
+      .eq('status', 'PAID')
+      .gte('created_at', yearAgo.toISOString());
+
+    const revenueMonthBuckets: Record<string, number> = {};
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now);
+      d.setMonth(d.getMonth() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      revenueMonthBuckets[key] = 0;
+    }
+
+    (paidOrdersYear || []).forEach(o => {
+      const d = new Date(o.created_at);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (revenueMonthBuckets[key] !== undefined) {
+        revenueMonthBuckets[key] += o.total_amount || 0;
+      }
+    });
+
+    const revenueChartData = Object.entries(revenueMonthBuckets).map(([key, revenue]) => {
+      const [y, m] = key.split('-');
+      const d = new Date(parseInt(y), parseInt(m) - 1);
+      return { 
+        label: d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' }), 
+        revenue 
+      };
+    });
+
     return NextResponse.json({
       kpis: {
         viewsToday: viewsToday || 0,
@@ -217,6 +252,7 @@ export async function GET(req: Request) {
         totalViews: totalViews || 0,
       },
       chartData,
+      revenueChartData,
       topPages,
       topReferrers,
       funnel: {

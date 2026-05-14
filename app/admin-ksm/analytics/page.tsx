@@ -14,6 +14,7 @@ interface AnalyticsData {
     totalViews: number;
   };
   chartData: { label: string; views: number }[];
+  revenueChartData: { label: string; revenue: number }[];
   topPages: { path: string; views: number }[];
   topReferrers: { source: string; views: number }[];
   funnel: {
@@ -297,6 +298,46 @@ CREATE INDEX idx_page_views_path ON page_views (path);`}</pre>
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Revenue Chart (12 Months) */}
+      <div className="border border-white/10 bg-zinc-950 p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+            Analyse des Revenus — 12 derniers mois
+          </h3>
+          <span className="text-[10px] text-white/50 font-mono">Vue macroéconomique</span>
+        </div>
+        <div className="flex items-end gap-1 h-64">
+          {data.revenueChartData && data.revenueChartData.length > 0 ? (
+            data.revenueChartData.map((point, idx) => {
+              const maxMonthlyRevenue = Math.max(...data.revenueChartData.map(d => d.revenue), 1);
+              const height = maxMonthlyRevenue > 0 ? (point.revenue / maxMonthlyRevenue) * 100 : 0;
+              const formattedRevenue = new Intl.NumberFormat('fr-FR').format(point.revenue);
+              
+              return (
+                <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 group">
+                  <span className="text-[9px] text-white/60 font-mono opacity-0 group-hover:opacity-100 transition-opacity bg-black px-2 py-1 border border-white/10 absolute -mt-10 z-10 whitespace-nowrap shadow-xl">
+                    {formattedRevenue} FCFA
+                  </span>
+                  <div className="w-full flex justify-center h-full items-end">
+                    <div
+                      className="w-full max-w-16 bg-gradient-to-t from-emerald-900/40 to-emerald-500/60 hover:from-emerald-800/60 hover:to-emerald-400/80 transition-all duration-300 rounded-t-sm border-t border-emerald-500/50"
+                      style={{ height: `${Math.max(height, 2)}%` }}
+                    />
+                  </div>
+                  <span className="text-[8px] md:text-[9px] text-white/40 font-bold uppercase mt-2">
+                    {point.label}
+                  </span>
+                </div>
+              );
+            })
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-white/20 text-sm">
+              Données insuffisantes pour générer le graphique.
+            </div>
+          )}
         </div>
       </div>
 

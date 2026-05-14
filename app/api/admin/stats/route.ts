@@ -13,6 +13,27 @@ export async function GET() {
 
     if (paidError) throw paidError;
 
+    const now = new Date();
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const fourteenDaysAgo = new Date(now);
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+    const revenueLast7Days = (paidOrders || [])
+      .filter(o => new Date(o.created_at) >= sevenDaysAgo)
+      .reduce((sum, o) => sum + (o.total_amount || 0), 0);
+
+    const revenuePrevious7Days = (paidOrders || [])
+      .filter(o => new Date(o.created_at) >= fourteenDaysAgo && new Date(o.created_at) < sevenDaysAgo)
+      .reduce((sum, o) => sum + (o.total_amount || 0), 0);
+
+    let revenueTrend = 0;
+    if (revenuePrevious7Days > 0) {
+      revenueTrend = Math.round(((revenueLast7Days - revenuePrevious7Days) / revenuePrevious7Days) * 100);
+    } else if (revenueLast7Days > 0) {
+      revenueTrend = 100; // Si 0 avant et ventes maintenant, on met +100%
+    }
+
     const totalRevenue = (paidOrders || []).reduce((sum, o) => sum + (o.total_amount || 0), 0);
     const totalSales = (paidOrders || []).length;
     const averageOrder = totalSales > 0 ? Math.round(totalRevenue / totalSales) : 0;
@@ -24,9 +45,6 @@ export async function GET() {
       .eq('status', 'PENDING');
 
     // 3. Revenue by day (last 7 days)
-    const now = new Date();
-    const sevenDaysAgo = new Date(now);
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const revenueByDay: { date: string; revenue: number; count: number }[] = [];
     for (let i = 6; i >= 0; i--) {
@@ -83,6 +101,7 @@ export async function GET() {
         totalSales,
         averageOrder,
         pendingOrders: pendingCount || 0,
+        revenueTrend,
       },
       revenueByDay,
       productStats,
