@@ -86,7 +86,7 @@ export default function ArsenalCta({
               placeholder="Prénom et Nom"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-black border border-white/10 p-4 text-sm focus:outline-none focus:border-gold transition-colors text-white"
+              className="w-full bg-black border border-white/10 p-4 text-base focus:outline-none focus:border-gold transition-colors text-white"
               disabled={isLoading}
             />
           </div>
@@ -241,7 +241,7 @@ export default function ArsenalCta({
               placeholder="votre@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-black border border-white/10 p-4 text-sm focus:outline-none focus:border-gold transition-colors text-white"
+              className="w-full bg-black border border-white/10 p-4 text-base focus:outline-none focus:border-gold transition-colors text-white"
               disabled={isLoading}
             />
           </div>
