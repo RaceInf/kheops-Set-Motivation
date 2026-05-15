@@ -97,7 +97,7 @@ export async function GET(req: Request) {
       }
 
       if (reminderSent) {
-        // Logger l'envoi (réussite ou échec)
+        // Logger l'envoi dans webhook_events (existant)
         await supabase.from('webhook_events').insert([{
           provider: 'tara',
           event_type: reminderSent,
@@ -112,6 +112,19 @@ export async function GET(req: Request) {
           },
           status: errorOccurred ? 'FAILED' : 'PROCESSED'
         }]);
+
+        // Logger aussi dans email_events (nouveau tracking)
+        if (!errorOccurred) {
+          await supabase.from('email_events').insert([{
+            email: customerEmail,
+            event_type: 'sent',
+            order_id: order.id,
+            campaign_tag: reminderSent,
+            subject: `[KSM] Relance ${reminderSent.replace('marketing_reminder_', '').toUpperCase()}`,
+            timestamp: new Date().toISOString(),
+            metadata: { productName: tool.title, customerName: order.customer_name }
+          }]);
+        }
 
         if (!errorOccurred) {
           // Notification Admin uniquement si succès

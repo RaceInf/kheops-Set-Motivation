@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { 
   Mail, MessageCircle, AlertCircle, CheckCircle2, 
   TrendingUp, Clock, RefreshCw, ChevronRight,
-  MousePointer2, Zap, BarChart3, ChevronDown, User, Hash, Calendar, Package
+  MousePointer2, Zap, BarChart3, ChevronDown, User, Hash, Calendar, Package,
+  Send, Eye, MousePointerClick, Ban, ShieldAlert, Link2, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import AnimatedNumber from '@/components/admin/AnimatedNumber';
@@ -14,32 +15,63 @@ interface MarketingEvent {
   id: string;
   date: string;
   eventType: string;
-  status: 'PROCESSED' | 'FAILED';
-  error_message?: string;
+  source: 'brevo' | 'system';
+  status: string;
   payload: {
     orderId?: string;
     email?: string;
     sentAt?: string;
     error?: string;
+    reason?: string;
+    linkUrl?: string;
+    subject?: string;
+    messageId?: string;
     reminderType?: string;
     manual?: boolean;
     customerName?: string;
     whatsappNumber?: string;
     productName?: string;
+    campaignTag?: string;
     [key: string]: any;
   };
 }
 
 interface MarketingStats {
+  totalSent: number;
+  totalDelivered: number;
+  totalOpened: number;
+  totalClicked: number;
+  totalBounced: number;
+  totalErrors: number;
+  openRate: number;
+  clickRate: number;
+  pendingSequence: number;
   totalAbandoned: number;
   totalRecovered: number;
-  recoveryRate: number;
   emailsSent: number;
   whatsappClicks: number;
-  pendingSequence: number;
 }
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 25;
+
+const EVENT_CONFIG: Record<string, { label: string; icon: any; badgeColor: string; badgeBg: string }> = {
+  sent:         { label: 'Email envoyé',            icon: Send,              badgeColor: 'text-zinc-300',    badgeBg: 'bg-zinc-500/10 border-zinc-500/20' },
+  delivered:    { label: 'Email délivré',            icon: CheckCircle2,      badgeColor: 'text-blue-400',    badgeBg: 'bg-blue-500/10 border-blue-500/20' },
+  opened:       { label: 'Email ouvert',             icon: Eye,               badgeColor: 'text-amber-400',   badgeBg: 'bg-amber-500/10 border-amber-500/20' },
+  clicked:      { label: 'Lien cliqué',              icon: MousePointerClick,  badgeColor: 'text-emerald-400', badgeBg: 'bg-emerald-500/10 border-emerald-500/20' },
+  hard_bounce:  { label: 'Adresse inexistante',      icon: Ban,               badgeColor: 'text-red-400',     badgeBg: 'bg-red-500/10 border-red-500/20' },
+  soft_bounce:  { label: 'Boîte pleine',             icon: AlertCircle,       badgeColor: 'text-orange-400',  badgeBg: 'bg-orange-500/10 border-orange-500/20' },
+  blocked:      { label: 'Bloqué par le serveur',    icon: Ban,               badgeColor: 'text-red-400',     badgeBg: 'bg-red-500/10 border-red-500/20' },
+  spam:         { label: 'Signalé comme spam',       icon: ShieldAlert,       badgeColor: 'text-red-500',     badgeBg: 'bg-red-500/10 border-red-500/20' },
+  unsubscribed: { label: 'Désinscription',           icon: Mail,              badgeColor: 'text-zinc-400',    badgeBg: 'bg-zinc-500/10 border-zinc-500/20' },
+  error:        { label: 'Erreur d\'envoi',          icon: AlertCircle,       badgeColor: 'text-red-400',     badgeBg: 'bg-red-500/10 border-red-500/20' },
+  deferred:     { label: 'Envoi différé',            icon: Clock,             badgeColor: 'text-yellow-400',  badgeBg: 'bg-yellow-500/10 border-yellow-500/20' },
+  invalid:      { label: 'Adresse invalide',         icon: Ban,               badgeColor: 'text-red-400',     badgeBg: 'bg-red-500/10 border-red-500/20' },
+  reminder_h1:  { label: 'Relance H+1',             icon: Mail,              badgeColor: 'text-gold',        badgeBg: 'bg-gold/10 border-gold/20' },
+  reminder_h24: { label: 'Relance H+24',            icon: Mail,              badgeColor: 'text-gold',        badgeBg: 'bg-gold/10 border-gold/20' },
+  reminder_h72: { label: 'Relance H+72',            icon: Mail,              badgeColor: 'text-gold',        badgeBg: 'bg-gold/10 border-gold/20' },
+  whatsapp_relance: { label: 'Relance WhatsApp',    icon: MessageCircle,     badgeColor: 'text-emerald-400', badgeBg: 'bg-emerald-500/10 border-emerald-500/20' },
+};
 
 export default function AdminMarketingPage() {
   const [events, setEvents] = useState<MarketingEvent[]>([]);
@@ -49,16 +81,13 @@ export default function AdminMarketingPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
 
   const fetchData = async () => {
     setRefreshing(true);
     try {
       const res = await fetch('/api/admin/marketing/stats');
-      if (!res.ok) {
-        throw new Error(`API Error: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`API Error: ${res.status}`);
       const data = await res.json();
       setEvents(data.events || []);
       setStats(data.stats || null);
@@ -76,62 +105,36 @@ export default function AdminMarketingPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Filter and Search Logic
+  // Filtering
   const filteredEvents = events.filter(event => {
-    const matchesSearch = 
-      (event.payload.email?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (event.payload.orderId?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (event.payload.customerName?.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesStatus = statusFilter === 'ALL' || event.status === statusFilter;
-    
-    const matchesType = typeFilter === 'ALL' || 
+    const q = searchQuery.toLowerCase();
+    const matchesSearch = !q ||
+      event.payload.email?.toLowerCase().includes(q) ||
+      event.payload.orderId?.toLowerCase().includes(q) ||
+      event.payload.customerName?.toLowerCase().includes(q);
+
+    const matchesType = typeFilter === 'ALL' ||
+      (typeFilter === 'SENT' && event.eventType === 'sent') ||
+      (typeFilter === 'DELIVERED' && event.eventType === 'delivered') ||
+      (typeFilter === 'OPENED' && event.eventType === 'opened') ||
+      (typeFilter === 'CLICKED' && event.eventType === 'clicked') ||
+      (typeFilter === 'ERRORS' && ['hard_bounce', 'soft_bounce', 'blocked', 'spam', 'error', 'invalid', 'deferred'].includes(event.eventType)) ||
       (typeFilter === 'REMINDERS' && event.eventType.includes('reminder')) ||
-      (typeFilter === 'TRACKING' && (event.eventType.includes('opened') || event.eventType.includes('click'))) ||
-      (typeFilter === 'DELIVERY' && event.eventType.includes('delivered')) ||
       (typeFilter === 'WHATSAPP' && event.eventType.includes('whatsapp'));
 
-    return matchesSearch && matchesStatus && matchesType;
+    return matchesSearch && matchesType;
   });
+
+  const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
+  const currentEvents = filteredEvents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('fr-FR', {
-      day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
   };
 
-  const getEventIcon = (type: string, status: string) => {
-    if (status === 'FAILED') return <AlertCircle className="w-4 h-4 text-red-400" />;
-    if (type === 'brevo_opened') return <MousePointer2 className="w-4 h-4 text-amber-400" />;
-    if (type === 'brevo_click') return <Zap className="w-4 h-4 text-gold" />;
-    if (type.includes('whatsapp')) return <MessageCircle className="w-4 h-4 text-emerald-400" />;
-    return <Mail className="w-4 h-4 text-gold" />;
-  };
-
-  const getEventLabel = (type: string) => {
-    if (type.startsWith('brevo_')) {
-      const event = type.replace('brevo_', '');
-      switch (event) {
-        case 'opened': return 'Email Ouvert par le client';
-        case 'click': return 'Lien cliqué dans l\'email';
-        case 'delivered': return 'Email délivré avec succès';
-        case 'hard_bounce': return 'Email Inexistant (Hard Bounce)';
-        case 'soft_bounce': return 'Boîte pleine (Soft Bounce)';
-        default: return `Suivi Email: ${event}`;
-      }
-    }
-    switch (type) {
-      case 'reminder_h1': return 'Email Relance H+1';
-      case 'reminder_h24': return 'Email Relance H+24';
-      case 'reminder_h72': return 'Email Relance H+72';
-      case 'whatsapp_relance': return 'Relance WhatsApp (Manuelle)';
-      default: return type;
-    }
-  };
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
-  const currentEvents = filteredEvents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const getConfig = (type: string) => EVENT_CONFIG[type] || { label: type, icon: Mail, badgeColor: 'text-white/40', badgeBg: 'bg-white/5 border-white/10' };
 
   return (
     <div className="flex flex-col gap-8">
@@ -139,117 +142,102 @@ export default function AdminMarketingPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="font-display text-4xl md:text-5xl uppercase tracking-tighter">
-            Marketing & Relances
+            Tracking Email
           </h1>
           <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">
-            Performance de la séquence de récupération de paniers
+            Suivi temps réel des campagnes marketing
           </p>
         </div>
-        
-        <div className="flex gap-4">
-          <button
-            onClick={fetchData}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-5 py-2.5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/50 hover:text-gold hover:border-gold transition-all group"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-gold' : ''}`} />
-            Actualiser
-          </button>
-        </div>
+        <button
+          onClick={fetchData}
+          disabled={refreshing}
+          className="flex items-center gap-2 px-5 py-2.5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/50 hover:text-gold hover:border-gold transition-all"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-gold' : ''}`} />
+          Actualiser
+        </button>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Grid — 6 Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {!stats ? (
-          Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)
+          Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)
         ) : (
           <>
-            <StatCard label="Valeur Abandonnée" value={stats.totalAbandoned} isCurrency icon={Clock} color="text-white/40" />
-            <StatCard label="Valeur Récupérée" value={stats.totalRecovered} isCurrency icon={TrendingUp} color="text-emerald-400" accent />
-            <StatCard label="Taux de Récupération" value={stats.recoveryRate} suffix="%" icon={Zap} color="text-gold" />
-            <StatCard label="En cours de séquence" value={stats.pendingSequence} icon={BarChart3} color="text-blue-400" />
+            <StatCard label="Envoyés" value={stats.totalSent} icon={Send} color="text-zinc-300" />
+            <StatCard label="Délivrés" value={stats.totalDelivered} icon={CheckCircle2} color="text-blue-400" />
+            <StatCard label="Ouverts" value={stats.totalOpened} icon={Eye} color="text-amber-400" suffix={stats.openRate > 0 ? ` (${stats.openRate}%)` : ''} />
+            <StatCard label="Cliqués" value={stats.totalClicked} icon={MousePointerClick} color="text-emerald-400" suffix={stats.clickRate > 0 ? ` (${stats.clickRate}%)` : ''} />
+            <StatCard label="Bounces" value={stats.totalBounced} icon={Ban} color="text-red-400" />
+            <StatCard label="En séquence" value={stats.pendingSequence} icon={BarChart3} color="text-blue-300" />
           </>
         )}
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-col lg:flex-row gap-4 bg-zinc-900/30 border border-white/5 p-4">
+      <div className="flex flex-col lg:flex-row gap-3 bg-zinc-900/30 border border-white/5 p-3">
         <div className="flex-1 relative">
           <input
             type="text"
-            placeholder="RECHERCHER UN CLIENT OU UNE COMMANDE..."
+            placeholder="RECHERCHER PAR EMAIL OU COMMANDE..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
             className="w-full bg-black border border-white/10 px-10 py-3 text-[11px] font-bold uppercase tracking-widest text-white placeholder:text-white/20 focus:outline-none focus:border-gold transition-colors"
           />
-          <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
         </div>
-
-        <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase text-white/30 tracking-tighter">TYPE:</span>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="bg-black border border-white/10 px-4 py-3 text-[11px] font-bold uppercase text-white focus:outline-none focus:border-gold appearance-none cursor-pointer min-w-[140px]"
-            >
-              <option value="ALL">TOUT VOIR</option>
-              <option value="REMINDERS">RELANCES EMAILS</option>
-              <option value="TRACKING">OUVERTURES & CLICS</option>
-              <option value="DELIVERY">LIVRAISONS</option>
-              <option value="WHATSAPP">WHATSAPP</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase text-white/30 tracking-tighter">STATUT:</span>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-black border border-white/10 px-4 py-3 text-[11px] font-bold uppercase text-white focus:outline-none focus:border-gold appearance-none cursor-pointer min-w-[140px]"
-            >
-              <option value="ALL">TOUS STATUTS</option>
-              <option value="PROCESSED">RÉUSSI</option>
-              <option value="FAILED">ÉCHEC</option>
-            </select>
-          </div>
-        </div>
+        <select
+          value={typeFilter}
+          onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1); }}
+          className="bg-black border border-white/10 px-4 py-3 text-[11px] font-bold uppercase text-white focus:outline-none focus:border-gold appearance-none cursor-pointer min-w-[160px]"
+        >
+          <option value="ALL">TOUS LES ÉVÉNEMENTS</option>
+          <option value="SENT">📤 ENVOYÉS</option>
+          <option value="DELIVERED">📬 DÉLIVRÉS</option>
+          <option value="OPENED">👁️ OUVERTS</option>
+          <option value="CLICKED">🖱️ CLIQUÉS</option>
+          <option value="ERRORS">❌ ERREURS / BOUNCES</option>
+          <option value="REMINDERS">📧 RELANCES</option>
+          <option value="WHATSAPP">💬 WHATSAPP</option>
+        </select>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Activity Feed */}
-        <div className="lg:col-span-2 flex flex-col gap-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 flex items-center gap-2">
-              <Clock className="w-3 h-3" /> Journal d'activités marketing ({events.length})
-            </h3>
-          </div>
+      {/* Events Feed */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 flex items-center gap-2">
+          <Clock className="w-3 h-3" /> Journal d&apos;activités ({filteredEvents.length})
+        </h3>
 
-          <div className="border border-white/10 bg-zinc-950 divide-y divide-white/5 overflow-hidden">
-            {loading ? (
-              Array.from({ length: 6 }).map((_, i) => <div key={i} className="p-6 h-20 animate-pulse bg-white/5 m-1" />)
-            ) : currentEvents.length === 0 ? (
-              <div className="p-20 text-center text-white/20 text-[11px] font-bold uppercase tracking-widest">Aucune activité.</div>
-            ) : (
-              currentEvents.map((event, idx) => (
+        <div className="border border-white/10 bg-zinc-950 divide-y divide-white/5 overflow-hidden">
+          {loading ? (
+            Array.from({ length: 8 }).map((_, i) => <div key={i} className="p-5 h-16 animate-pulse bg-white/5 m-1" />)
+          ) : currentEvents.length === 0 ? (
+            <div className="p-20 text-center text-white/20 text-[11px] font-bold uppercase tracking-widest">Aucune activité.</div>
+          ) : (
+            currentEvents.map((event) => {
+              const config = getConfig(event.eventType);
+              const Icon = config.icon;
+              return (
                 <div key={event.id} className="flex flex-col border-b border-white/5 last:border-0">
-                  <button 
+                  <button
                     onClick={() => setExpandedId(expandedId === event.id ? null : event.id)}
-                    className="p-5 flex items-center justify-between group hover:bg-white/[0.02] transition-colors w-full text-left"
+                    className="p-4 flex items-center justify-between group hover:bg-white/[0.02] transition-colors w-full text-left"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-9 h-9 border border-white/5 flex items-center justify-center bg-black">
-                        {getEventIcon(event.eventType, event.status)}
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 border flex items-center justify-center bg-black ${config.badgeBg}`}>
+                        <Icon className={`w-3.5 h-3.5 ${config.badgeColor}`} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-black uppercase tracking-tight text-white/80">{getEventLabel(event.eventType)}</span>
-                          {event.status === 'FAILED' && <span className="text-[8px] bg-red-500/10 text-red-400 px-1.5 py-0.5 font-bold uppercase">Échec</span>}
+                          <span className={`text-[10px] font-black uppercase tracking-tight px-2 py-0.5 border ${config.badgeBg} ${config.badgeColor}`}>
+                            {config.label}
+                          </span>
+                          {event.status === 'FAILED' && <span className="text-[8px] bg-red-500/10 text-red-400 px-1.5 py-0.5 font-bold uppercase border border-red-500/20">Échec</span>}
                         </div>
-                        <div className="text-[10px] text-white/30 font-mono mt-1">{event.payload.email}</div>
+                        <div className="text-[10px] text-white/30 font-mono mt-0.5">{event.payload.email}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <div className="text-right hidden sm:block">
                         <div className="text-[10px] text-white/40 font-mono">{formatDate(event.date)}</div>
                       </div>
@@ -259,31 +247,34 @@ export default function AdminMarketingPage() {
 
                   <AnimatePresence>
                     {expandedId === event.id && (
-                      <motion.div 
+                      <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden bg-white/[0.01]"
                       >
-                        <div className="p-6 pt-0 flex flex-col gap-4 border-l-2 border-gold/20 mb-4 ml-14">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
-                            <DetailItem icon={User} label="Nom Client" value={event.payload.customerName || 'N/A'} />
+                        <div className="p-5 pt-0 flex flex-col gap-4 border-l-2 border-gold/20 ml-14 mb-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-2">
                             <DetailItem icon={Mail} label="Email" value={event.payload.email} />
-                            <DetailItem icon={MessageCircle} label="WhatsApp" value={event.payload.whatsappNumber || 'N/A'} />
-                            <DetailItem icon={Package} label="Produit" value={event.payload.productName || 'N/A'} />
-                            <DetailItem icon={Hash} label="Commande ID" value={event.payload.orderId} />
-                            <DetailItem icon={Calendar} label="Date Précise" value={formatDate(event.date)} />
+                            <DetailItem icon={Hash} label="Commande" value={event.payload.orderId || 'N/A'} />
+                            <DetailItem icon={Calendar} label="Date" value={formatDate(event.date)} />
+                            {event.payload.subject && <DetailItem icon={Mail} label="Sujet" value={event.payload.subject} />}
+                            {event.payload.linkUrl && <DetailItem icon={Link2} label="Lien cliqué" value={event.payload.linkUrl} />}
+                            {event.payload.campaignTag && <DetailItem icon={Package} label="Campagne" value={event.payload.campaignTag} />}
+                            {event.payload.customerName && <DetailItem icon={User} label="Client" value={event.payload.customerName} />}
+                            {event.payload.productName && <DetailItem icon={Package} label="Produit" value={event.payload.productName} />}
+                            {event.payload.whatsappNumber && <DetailItem icon={MessageCircle} label="WhatsApp" value={event.payload.whatsappNumber} />}
                           </div>
-                          {(event.payload.error || event.error_message) && (
+                          {(event.payload.reason || event.payload.error) && (
                             <div className="p-4 bg-red-500/10 border border-red-500/20">
                               <p className="text-[9px] text-red-400 font-black uppercase tracking-widest mb-2 flex items-center gap-2">
-                                <AlertCircle className="w-3 h-3" /> Diagnostic de l'erreur
+                                <AlertCircle className="w-3 h-3" /> Diagnostic
                               </p>
                               <p className="text-[11px] text-white/80 font-medium leading-relaxed">
-                                {event.payload.error ? translateError(event.payload.error) : event.error_message}
+                                {translateError(event.payload.reason || event.payload.error || '')}
                               </p>
-                              <p className="text-[8px] text-white/20 font-mono mt-3 uppercase tracking-tighter">
-                                Code technique : {event.payload.error || 'N/A'}
+                              <p className="text-[8px] text-white/20 font-mono mt-2 uppercase tracking-tighter break-all">
+                                {event.payload.reason || event.payload.error}
                               </p>
                             </div>
                           )}
@@ -292,54 +283,33 @@ export default function AdminMarketingPage() {
                     )}
                   </AnimatePresence>
                 </div>
-              ))
-            )}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-4">
-              <button 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 border border-white/10 text-[10px] font-bold uppercase tracking-widest disabled:opacity-30 hover:border-gold hover:text-gold transition-all"
-              >
-                Précédent
-              </button>
-              <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-                Page {currentPage} sur {totalPages}
-              </span>
-              <button 
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 border border-white/10 text-[10px] font-bold uppercase tracking-widest disabled:opacity-30 hover:border-gold hover:text-gold transition-all"
-              >
-                Suivant
-              </button>
-            </div>
+              );
+            })
           )}
         </div>
 
-        {/* Channels */}
-        <div className="flex flex-col gap-6">
-          <div className="border border-white/10 bg-zinc-950 p-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-6">Canaux de conversion</h3>
-            <div className="space-y-6">
-              <ChannelMetric label="Email Automatique" count={stats?.emailsSent || 0} color="bg-gold" />
-              <ChannelMetric label="WhatsApp Manuel" count={stats?.whatsappClicks || 0} color="bg-emerald-500" />
-            </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-white/10 text-[10px] font-bold uppercase tracking-widest disabled:opacity-30 hover:border-gold hover:text-gold transition-all"
+            >
+              Précédent
+            </button>
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-white/10 text-[10px] font-bold uppercase tracking-widest disabled:opacity-30 hover:border-gold hover:text-gold transition-all"
+            >
+              Suivant
+            </button>
           </div>
-          
-          <div className="border border-white/10 bg-white/[0.02] p-6">
-             <div className="flex items-center gap-3 text-gold mb-4">
-               <Zap className="w-5 h-5" />
-               <span className="text-xs font-black uppercase tracking-widest">Optimisation</span>
-             </div>
-             <p className="text-[11px] text-white/60 leading-relaxed uppercase tracking-widest font-bold">
-               Le système de relance automatique maximise votre ROI en récupérant les indécis sans effort manuel.
-             </p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -356,33 +326,15 @@ function DetailItem({ icon: Icon, label, value }: any) {
   );
 }
 
-function StatCard({ label, value, isCurrency = false, suffix = '', icon: Icon, color, accent = false }: any) {
+function StatCard({ label, value, icon: Icon, color, suffix = '' }: any) {
   return (
-    <div className={`border border-white/10 bg-zinc-950 p-6 flex flex-col gap-4 hover:border-white/20 transition-all group ${accent ? 'ring-1 ring-emerald-500/20' : ''}`}>
+    <div className="border border-white/10 bg-zinc-950 p-5 flex flex-col gap-3 hover:border-white/20 transition-all group">
       <div className="flex justify-between items-center">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">{label}</span>
+        <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">{label}</span>
         <Icon className={`w-4 h-4 ${color} opacity-40 group-hover:opacity-100 transition-opacity`} />
       </div>
-      <div className={`font-display text-3xl tracking-tight text-white ${accent ? 'text-emerald-400' : 'group-hover:text-gold'} transition-colors`}>
-        <AnimatedNumber value={value || 0} suffix={isCurrency ? ' FCFA' : suffix} />
-      </div>
-    </div>
-  );
-}
-
-function ChannelMetric({ label, count, color }: any) {
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-        <span className="text-white/40">{label}</span>
-        <span className="text-white">{count} envois</span>
-      </div>
-      <div className="h-1 bg-white/5 w-full overflow-hidden">
-        <motion.div 
-          initial={{ width: 0 }}
-          animate={{ width: count > 0 ? '100%' : '0%' }}
-          className={`h-full ${color}`}
-        />
+      <div className="font-display text-2xl tracking-tight text-white group-hover:text-gold transition-colors">
+        <AnimatedNumber value={value || 0} />{suffix && <span className="text-xs text-white/30 ml-1">{suffix}</span>}
       </div>
     </div>
   );
@@ -390,23 +342,14 @@ function ChannelMetric({ label, count, color }: any) {
 
 function translateError(error: string) {
   const err = error.toLowerCase();
-  if (err.includes('invalid_parameter') || err.includes('valid email')) {
-    return "L'adresse email saisie par le client est invalide ou mal orthographiée (ex: oubli du @).";
-  }
-  if (err.includes('hard_bounce') || err.includes('not exist')) {
-    return "L'adresse email n'existe pas ou le serveur du client a rejeté définitivement le message.";
-  }
-  if (err.includes('soft_bounce') || err.includes('full')) {
-    return "La boîte de réception du client est pleine ou temporairement indisponible.";
-  }
-  if (err.includes('quota')) {
-    return "Votre quota d'envois Brevo est épuisé. Vérifiez votre abonnement.";
-  }
-  if (err.includes('unauthorized') || err.includes('api_key')) {
-    return "Erreur d'authentification avec Brevo. Vérifiez votre clé API dans .env.local.";
-  }
-  if (err.includes('resend') || err.includes('too many')) {
-    return "Trop de tentatives d'envoi en peu de temps. Le système a été temporairement freiné.";
-  }
-  return "Une erreur technique inconnue est survenue lors de la communication avec Brevo.";
+  if (err.includes('sender') || err.includes('validate your sender')) return "L'adresse d'expédition n'est pas validée dans Brevo. Vérifiez les Expéditeurs & IP.";
+  if (err.includes('invalid_parameter') || err.includes('valid email')) return "L'adresse email du client est invalide ou mal orthographiée.";
+  if (err.includes('hard_bounce') || err.includes('not exist')) return "L'adresse email n'existe pas ou a été supprimée.";
+  if (err.includes('soft_bounce') || err.includes('full')) return "La boîte de réception du client est pleine ou temporairement indisponible.";
+  if (err.includes('blocked')) return "L'envoi a été bloqué par le serveur du destinataire.";
+  if (err.includes('spam')) return "L'email a été signalé comme spam par le destinataire.";
+  if (err.includes('quota')) return "Votre quota d'envois Brevo est épuisé.";
+  if (err.includes('unauthorized') || err.includes('api_key')) return "Erreur d'authentification avec Brevo. Vérifiez votre clé API.";
+  if (err.includes('deferred')) return "L'envoi a été temporairement reporté par le serveur destinataire.";
+  return "Erreur technique lors de la communication avec le serveur email.";
 }
