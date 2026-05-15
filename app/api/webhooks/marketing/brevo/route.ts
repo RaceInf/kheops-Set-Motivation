@@ -91,25 +91,39 @@ export async function POST(req: Request) {
         eventTimestamp = new Date().toISOString();
       }
 
-      // Insert avec déduplication (ON CONFLICT ignore le doublon)
-      const { error } = await supabase.from('email_events').upsert(
-        {
-          email: email || 'unknown',
-          event_type: eventType,
-          message_id: messageId,
-          order_id: orderId,
-          campaign_tag: campaignTag,
-          reason: reason,
-          link_url: linkUrl,
-          subject: subject || null,
-          timestamp: eventTimestamp,
-          metadata: brevoEvent, // Payload brut complet pour audit
-        },
-        {
-          onConflict: 'message_id,event_type',
-          ignoreDuplicates: true,
+      // Check for duplicate (if messageId is present)
+      let isDuplicate = false;
+      if (messageId) {
+        const { data: existing } = await supabase
+          .from('email_events')
+          .select('id')
+          .eq('message_id', messageId)
+          .eq('event_type', eventType)
+          .limit(1);
+        
+        if (existing && existing.length > 0) {
+          isDuplicate = true;
         }
-      );
+      }
+
+      if (isDuplicate) {
+        results.push({ event: eventType, email, status: 'ignored_duplicate' });
+        continue;
+      }
+
+      // Insert new event
+      const { error } = await supabase.from('email_events').insert([{
+        email: email || 'unknown',
+        event_type: eventType,
+        message_id: messageId,
+        order_id: orderId,
+        campaign_tag: campaignTag,
+        reason: reason,
+        link_url: linkUrl,
+        subject: subject || null,
+        timestamp: eventTimestamp,
+        metadata: brevoEvent, // Payload brut complet pour audit
+      }]);
 
       if (error) {
         console.error('Email event insert error:', error);
