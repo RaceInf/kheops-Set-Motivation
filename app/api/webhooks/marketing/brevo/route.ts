@@ -131,32 +131,8 @@ export async function POST(req: Request) {
       } else {
         results.push({ event: eventType, email, status: 'ok' });
 
-        // Un clic implique toujours une ouverture.
-        // Gmail bloque souvent le pixel de tracking, donc on génère
-        // automatiquement un événement "opened" si aucun n'existe.
-        if (eventType === 'clicked' && messageId) {
-          const { data: existingOpen } = await supabase
-            .from('email_events')
-            .select('id')
-            .eq('message_id', messageId)
-            .eq('event_type', 'opened')
-            .limit(1);
-
-          if (!existingOpen || existingOpen.length === 0) {
-            await supabase.from('email_events').insert([{
-              email: email || 'unknown',
-              event_type: 'opened',
-              message_id: messageId,
-              order_id: orderId,
-              campaign_tag: campaignTag,
-              subject: subject || null,
-              timestamp: eventTimestamp,
-              metadata: { ...brevoEvent, auto_inferred: true, source: 'inferred_from_click' },
-            }]);
-            results.push({ event: 'opened', email, status: 'auto_inferred_from_click' });
-          }
-        }
       }
+    }
     }
 
     return NextResponse.json({ success: true, processed: results.length, results });
