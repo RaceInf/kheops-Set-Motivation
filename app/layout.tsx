@@ -1,5 +1,4 @@
 import type {Metadata} from 'next';
-import { Bebas_Neue, Inter } from 'next/font/google';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
@@ -8,17 +7,6 @@ import WhatsAppWidget from '@/components/WhatsAppWidget';
 import SalesFlux from '@/components/SalesFlux';
 import PageTracker from '@/components/PageTracker';
 import './globals.css';
-
-const bebas = Bebas_Neue({ 
-  subsets: ['latin'], 
-  weight: ['400'], 
-  variable: '--font-bebas' 
-});
-
-const inter = Inter({ 
-  subsets: ['latin'], 
-  variable: '--font-inter' 
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -101,12 +89,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="fr" className={`${bebas.variable} ${inter.variable}`}>
+    <html lang="fr" style={{ '--font-bebas': '"Bebas Neue", sans-serif', '--font-inter': '"Inter", sans-serif' } as React.CSSProperties}>
       <head>
-        {/* Fallback for Google Fonts in case next/font fails */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body className="bg-black text-white antialiased selection:bg-[#eeb149] selection:text-black font-sans" suppressHydrationWarning>
         {process.env.NEXT_PUBLIC_GA_ID && (

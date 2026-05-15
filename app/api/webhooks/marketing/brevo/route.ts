@@ -11,23 +11,15 @@ export async function POST(req: Request) {
     for (const brevoEvent of events) {
       const { event, email, tags, status } = brevoEvent;
       
-      // On cherche le tag order_ID
       const orderTag = (tags || []).find((t: string) => t.startsWith('order_'));
-      if (!orderTag) continue;
+      const orderId = orderTag ? orderTag.replace('order_', '') : 'NO_ORDER_ID';
 
-      const orderId = orderTag.replace('order_', '');
-
-      // On log cet événement dans webhook_events
-      // On mappe les événements Brevo vers nos statuts
       let mappedStatus = 'PROCESSED';
-      if (event === 'opened') mappedStatus = 'OPENED';
-      if (event === 'request' || event === 'delivered') mappedStatus = 'DELIVERED';
-      if (event === 'click') mappedStatus = 'CLICKED';
       if (event === 'deferred' || event === 'soft_bounce' || event === 'hard_bounce' || event === 'error') {
         mappedStatus = 'FAILED';
       }
 
-      await supabase.from('webhook_events').insert([{
+      const { error } = await supabase.from('webhook_events').insert([{
         provider: 'tara',
         event_type: `marketing_brevo_${event}`,
         payload: { 
@@ -35,10 +27,13 @@ export async function POST(req: Request) {
           email, 
           brevoEvent: event,
           brevoStatus: status,
+          rawPayload: brevoEvent, // Capture everything to diagnose
           receivedAt: new Date().toISOString()
         },
         status: mappedStatus
       }]);
+      
+      if (error) throw error;
     }
 
     return NextResponse.json({ success: true });

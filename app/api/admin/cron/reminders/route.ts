@@ -36,7 +36,6 @@ export async function GET(req: Request) {
         status,
         total_amount,
         customer_name,
-        whatsapp_number,
         users (email),
         order_items (product_id)
       `)

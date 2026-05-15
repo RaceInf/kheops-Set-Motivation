@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { tools } from '@/lib/data';
 import { 
   RefreshCw, Send, CheckCircle2, XCircle, Clock, 
-  Loader2, Filter, ChevronLeft, ChevronRight, User, Phone, ShoppingBag
+  Loader2, Filter, ChevronLeft, ChevronRight, User, Phone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import DateRangePicker from '@/components/admin/DateRangePicker';

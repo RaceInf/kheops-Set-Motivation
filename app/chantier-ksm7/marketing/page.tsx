@@ -19,9 +19,6 @@ interface MarketingEvent {
     orderId: string;
     email: string;
     sentAt: string;
-    customerName?: string;
-    whatsappNumber?: string;
-    productName?: string;
     error?: string;
     reminderType?: string;
     manual?: boolean;
@@ -80,8 +77,8 @@ export default function AdminMarketingPage() {
 
   const getEventIcon = (type: string, status: string) => {
     if (status === 'FAILED') return <AlertCircle className="w-4 h-4 text-red-400" />;
-    if (status === 'OPENED') return <MousePointer2 className="w-4 h-4 text-amber-400" />;
-    if (status === 'CLICKED') return <Zap className="w-4 h-4 text-gold" />;
+    if (type === 'brevo_opened') return <MousePointer2 className="w-4 h-4 text-amber-400" />;
+    if (type === 'brevo_click') return <Zap className="w-4 h-4 text-gold" />;
     if (type.includes('whatsapp')) return <MessageCircle className="w-4 h-4 text-emerald-400" />;
     return <Mail className="w-4 h-4 text-gold" />;
   };
@@ -199,7 +196,7 @@ export default function AdminMarketingPage() {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden bg-white/[0.01]"
                       >
-                        <div className="p-6 pt-0 flex flex-col gap-4 border-l-2 border-gold/20 mb-4 ml-14">
+                        <div className="p-6 pt-0 ml-13 flex flex-col gap-4 border-l-2 border-gold/20 ml-9 mb-4 ml-14">
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
                             <DetailItem icon={User} label="Nom Client" value={event.payload.customerName || 'N/A'} />
                             <DetailItem icon={Mail} label="Email" value={event.payload.email} />
