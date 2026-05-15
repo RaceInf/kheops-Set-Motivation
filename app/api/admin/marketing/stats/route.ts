@@ -67,25 +67,27 @@ export async function GET() {
 
     // 6. Unifier et trier tous les événements chronologiquement
     const unifiedEvents = [
-      // Événements email (email_events)
-      ...allEmailEvents.map(e => ({
-        id: e.id,
-        date: e.timestamp,
-        eventType: e.event_type,
-        source: 'brevo' as const,
-        status: ['hard_bounce', 'soft_bounce', 'error', 'blocked', 'spam', 'invalid', 'deferred'].includes(e.event_type)
-          ? 'FAILED'
-          : 'PROCESSED',
-        payload: {
-          email: e.email,
-          orderId: e.order_id,
-          campaignTag: e.campaign_tag,
-          reason: e.reason,
-          linkUrl: e.link_url,
-          subject: e.subject,
-          messageId: e.message_id,
-        },
-      })),
+      // Événements email (email_events) — exclure les proxy_opened (pré-chargement Gmail)
+      ...allEmailEvents
+        .filter(e => e.event_type !== 'proxy_opened')
+        .map(e => ({
+          id: e.id,
+          date: e.timestamp,
+          eventType: e.event_type,
+          source: 'brevo' as const,
+          status: ['hard_bounce', 'soft_bounce', 'error', 'blocked', 'spam', 'invalid', 'deferred'].includes(e.event_type)
+            ? 'FAILED'
+            : 'PROCESSED',
+          payload: {
+            email: e.email,
+            orderId: e.order_id,
+            campaignTag: e.campaign_tag,
+            reason: e.reason,
+            linkUrl: e.link_url,
+            subject: e.subject,
+            messageId: e.message_id,
+          },
+        })),
       // Relances envoyées (webhook_events)
       ...(reminderEvents || []).map(e => ({
         id: e.id,
