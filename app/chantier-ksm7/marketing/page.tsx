@@ -16,12 +16,16 @@ interface MarketingEvent {
   eventType: string;
   status: string;
   payload: {
-    orderId: string;
-    email: string;
-    sentAt: string;
+    orderId?: string;
+    email?: string;
+    sentAt?: string;
     error?: string;
     reminderType?: string;
     manual?: boolean;
+    customerName?: string;
+    whatsappNumber?: string;
+    productName?: string;
+    [key: string]: any;
   };
 }
 
