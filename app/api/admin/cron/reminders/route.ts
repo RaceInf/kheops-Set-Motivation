@@ -159,20 +159,12 @@ export async function GET(req: Request) {
 
 /**
  * Génère ou récupère un lien de paiement pour la relance
+ * Redirige vers la page de vente du produit pour éviter les bugs de prix de Tara Money.
  */
 async function getCheckoutUrl(order: any, tool: any) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kheops-set-motivation.vercel.app';
   
-  // On régénère un lien frais via Tara
-  const paymentResponse = await taraProvider.createPaymentLink({
-    orderId: order.id,
-    productId: tool.id,
-    productName: tool.title,
-    productPrice: order.total_amount,
-    productDescription: tool.desc,
-    productPictureUrl: `${baseUrl}${tool.image}`,
-    userEmail: order.users.email
-  });
-
-  return paymentResponse.paymentUrl || `${baseUrl}/arsenal/${tool.id}`;
+  // On renvoie directement le client sur la page du produit pour qu'il relise
+  // les arguments de vente et évite le bug de prix du catalogue Tara Money.
+  return `${baseUrl}/arsenal/${tool.id}`;
 }
