@@ -130,6 +130,57 @@ export async function POST(req: Request) {
         results.push({ event: eventType, email, error: error.message });
       } else {
         results.push({ event: eventType, email, status: 'ok' });
+
+        // Un proxy_opened (Gmail) est souvent le SEUL signal d'ouverture
+        // qu'on recevra. On génère donc un vrai "opened" en parallèle.
+        if (eventType === 'proxy_opened' && messageId) {
+          const { data: existingOpen } = await supabase
+            .from('email_events')
+            .select('id')
+            .eq('message_id', messageId)
+            .eq('event_type', 'opened')
+            .limit(1);
+
+          if (!existingOpen || existingOpen.length === 0) {
+            await supabase.from('email_events').insert([{
+              email: email || 'unknown',
+              event_type: 'opened',
+              message_id: messageId,
+              order_id: orderId,
+              campaign_tag: campaignTag,
+              subject: subject || null,
+              timestamp: eventTimestamp,
+              metadata: { ...brevoEvent, auto_inferred: true, source: 'inferred_from_proxy_open' },
+            }]);
+            results.push({ event: 'opened', email, status: 'auto_inferred_from_proxy' });
+          }
+        }
+
+        // Un clic implique toujours une ouverture.
+        // Gmail bloque souvent le pixel de tracking, donc on génère
+        // automatiquement un événement "opened" si aucun n'existe.
+        if (eventType === 'clicked' && messageId) {
+          const { data: existingOpen } = await supabase
+            .from('email_events')
+            .select('id')
+            .eq('message_id', messageId)
+            .eq('event_type', 'opened')
+            .limit(1);
+
+          if (!existingOpen || existingOpen.length === 0) {
+            await supabase.from('email_events').insert([{
+              email: email || 'unknown',
+              event_type: 'opened',
+              message_id: messageId,
+              order_id: orderId,
+              campaign_tag: campaignTag,
+              subject: subject || null,
+              timestamp: eventTimestamp,
+              metadata: { ...brevoEvent, auto_inferred: true, source: 'inferred_from_click' },
+            }]);
+            results.push({ event: 'opened', email, status: 'auto_inferred_from_click' });
+          }
+        }
       }
     }
 
