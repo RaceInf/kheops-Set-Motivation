@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { tools } from '@/lib/data';
-import { 
-  RefreshCw, Send, CheckCircle2, XCircle, Clock, 
-  Loader2, Filter, ChevronLeft, ChevronRight, User, Phone, ShoppingBag
+import {
+  RefreshCw, Send, CheckCircle2, XCircle, Clock,
+  Loader2, Filter, ChevronLeft, ChevronRight, Phone, ShoppingBag,
+  MailCheck, MailX, AlertTriangle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import DateRangePicker from '@/components/admin/DateRangePicker';
@@ -16,6 +17,9 @@ interface Order {
   date: string;
   amount: number;
   status: string;
+  deliveryStatus?: 'PENDING' | 'SENT' | 'FAILED';
+  deliverySentAt?: string;
+  deliveryError?: string;
   email: string;
   productId: string;
   customerName?: string;
@@ -179,6 +183,7 @@ export default function AdminOrdersPage() {
                   <th className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-black p-5">Produit</th>
                   <th className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-black p-5 text-right">Montant</th>
                   <th className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-black p-5">Statut</th>
+                  <th className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-black p-5">Livraison</th>
                   <th className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-black p-5 text-right">Actions</th>
                 </tr>
               </thead>
@@ -234,6 +239,39 @@ export default function AdminOrdersPage() {
                             <StatusIcon className="w-2.5 h-2.5" />
                             {statusConf.label}
                           </span>
+                        </td>
+                        <td className="p-5">
+                          {order.status === 'PAID' ? (
+                            order.deliveryStatus === 'SENT' ? (
+                              <div className="flex flex-col gap-0.5">
+                                <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-400">
+                                  <MailCheck className="w-3 h-3" /> Envoyé
+                                </span>
+                                {order.deliverySentAt && (
+                                  <span className="text-[8px] text-white/20 font-mono">
+                                    {new Date(order.deliverySentAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                )}
+                              </div>
+                            ) : order.deliveryStatus === 'FAILED' ? (
+                              <div className="flex flex-col gap-0.5">
+                                <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-red-400">
+                                  <MailX className="w-3 h-3" /> Échoué
+                                </span>
+                                {order.deliveryError && (
+                                  <span className="text-[8px] text-red-400/50 font-mono truncate max-w-[120px]" title={order.deliveryError}>
+                                    {order.deliveryError}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-400">
+                                <AlertTriangle className="w-3 h-3" /> En attente
+                              </span>
+                            )
+                          ) : (
+                            <span className="text-[9px] text-white/10 font-bold uppercase tracking-widest">—</span>
+                          )}
                         </td>
                         <td className="p-5 text-right">
                           {order.status === 'PAID' ? (

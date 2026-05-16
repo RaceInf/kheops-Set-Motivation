@@ -15,7 +15,7 @@ export async function GET(req: Request) {
 
     let query = supabase
       .from('orders')
-      .select('id, created_at, total_amount, status, customer_name, whatsapp_number, users(email), order_items(product_id)', { count: 'exact' });
+      .select('id, created_at, total_amount, status, delivery_status, delivery_sent_at, delivery_error, customer_name, whatsapp_number, users(email), order_items(product_id)', { count: 'exact' });
 
     if (status) query = query.eq('status', status);
     if (from) {
@@ -41,6 +41,9 @@ export async function GET(req: Request) {
         date: o.created_at,
         amount: o.total_amount,
         status: o.status,
+        deliveryStatus: o.delivery_status,
+        deliverySentAt: o.delivery_sent_at,
+        deliveryError: o.delivery_error,
         email: (o.users as any)?.email || 'N/A',
         productId: (o.order_items as any)?.[0]?.product_id || 'N/A',
         customerName: o.customer_name,
