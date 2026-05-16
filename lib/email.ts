@@ -154,138 +154,161 @@ export async function sendAdminNotification(customerEmail: string, productName: 
 }
 
 /**
- * Email Marketing : Relance H+1 (Le Rappel)
+ * Email Marketing : Relance H+1 (L'Outil t'attend)
+ * Design : Bannière hero pyramide + élégant, mystérieux
  */
 export async function sendMarketingReminderH1(customerEmail: string, productName: string, checkoutUrl: string, orderId?: string) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kheops-set-motivation.vercel.app';
   const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap');
-        body { margin: 0; padding: 0; background-color: #000000; font-family: 'Inter', Arial, sans-serif; color: #e4e4e7; }
-        .wrapper { background-color: #000000; padding: 40px 20px; }
-        .main { max-width: 600px; margin: 0 auto; background-color: #0a0a0a; border-top: 4px solid #eeb149; padding: 50px 40px; border-radius: 4px; }
-        .header { font-size: 11px; font-weight: 900; letter-spacing: 6px; color: #eeb149; text-transform: uppercase; margin-bottom: 40px; text-align: center; }
-        h1 { font-family: 'Anton', Impact, sans-serif; font-size: 48px; line-height: 1.1; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 30px 0; font-weight: normal; }
-        p { font-size: 16px; line-height: 1.6; margin-bottom: 24px; color: #d4d4d8; }
-        .highlight { color: #ffffff; font-weight: 700; border-bottom: 1px solid #eeb149; }
-        .btn-box { margin-top: 40px; text-align: center; }
-        .button { background-color: #eeb149; color: #000000 !important; padding: 20px 40px; text-decoration: none; font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 2px; display: inline-block; border-radius: 2px; }
-        .footer { margin-top: 50px; padding-top: 30px; border-top: 1px solid #1f1f22; text-align: center; font-size: 10px; color: #52525b; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
-      </style>
-    </head>
-    <body>
-      <div class="wrapper">
-        <div class="main">
-          <div class="header">KHEOPS SET MOTIVATION</div>
-          <h1>INTERRUPTION <span style="color: #eeb149;">DÉTECTÉE.</span></h1>
-          <p>Bâtisseur,</p>
-          <p>Le destin n'attend pas les indécis. Ton accès au protocole <span class="highlight">${productName}</span> est resté sur le seuil de la Forge.</p>
-          <p>L'infrastructure est prête. Les outils sont affûtés. Il ne manque que ta validation pour lancer l'exécution.</p>
-          <div class="btn-box">
-            <a href="${checkoutUrl}" class="button">REPRENDRE L'ACCÈS</a>
-          </div>
-          <div class="footer">LE SUCCÈS EST UNE DISCIPLINE.</div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;color:#e4e4e7;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#000000;">
+    <tr><td align="center" style="padding:30px 15px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#0a0a0a;border-radius:4px;overflow:hidden;">
+        <tr><td style="padding:0;"><img src="${siteUrl}/images/email/banner-h1.png" alt="Kheops Set" width="600" style="display:block;width:100%;height:auto;border:0;" /></td></tr>
+        <tr><td style="background-color:#eeb149;height:3px;font-size:0;line-height:0;">&nbsp;</td></tr>
+        <tr><td style="padding:45px 40px 20px;">
+          <h1 style="font-size:32px;line-height:1.15;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:900;">TON OUTIL<br/><span style="color:#eeb149;">T'ATTEND.</span></h1>
+          <p style="font-size:11px;letter-spacing:4px;color:#eeb149;text-transform:uppercase;font-weight:700;margin:0 0 30px;opacity:0.7;">RELANCE AUTOMATIQUE</p>
+        </td></tr>
+        <tr><td style="padding:0 40px 30px;">
+          <p style="font-size:16px;line-height:1.7;color:#d4d4d8;margin:0 0 20px;">Bâtisseur,</p>
+          <p style="font-size:16px;line-height:1.7;color:#d4d4d8;margin:0 0 20px;">Il y a quelques instants, tu étais à un clic de transformer ta trajectoire. Le protocole <strong style="color:#ffffff;">${productName}</strong> est resté sur le seuil de la Forge.</p>
+          <p style="font-size:16px;line-height:1.7;color:#d4d4d8;margin:0 0 20px;">L'infrastructure est prête. Les outils sont affûtés. <strong style="color:#ffffff;">Il ne manque que ta décision.</strong></p>
+        </td></tr>
+        <tr><td align="center" style="padding:10px 40px 45px;">
+          <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background-color:#eeb149;border-radius:2px;">
+            <a href="${checkoutUrl}" target="_blank" style="display:inline-block;padding:18px 45px;color:#000000;font-size:14px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;">REPRENDRE L'ACCÈS ➔</a>
+          </td></tr></table>
+        </td></tr>
+        <tr><td style="padding:0 40px;"><div style="border-top:1px solid #1f1f22;"></div></td></tr>
+        <tr><td style="padding:30px 40px;text-align:center;">
+          <p style="font-size:10px;color:#52525b;text-transform:uppercase;letter-spacing:3px;font-weight:700;margin:0;">LE SUCCÈS EST UNE DISCIPLINE.</p>
+          <p style="font-size:9px;color:#3f3f46;margin:10px 0 0;letter-spacing:1px;">Kheops Set Motivation — L'Ordre du Bâtisseur</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
+`;
 
   return sendEmail({
     to: customerEmail,
-    subject: `[KSM] Interruption détectée : ${productName}`,
+    subject: \`[KSM] \${productName} — ton outil t'attend, Bâtisseur.\`,
     htmlContent,
-    tags: orderId ? [`order_${orderId}`, 'marketing_h1'] : ['marketing_h1']
+    tags: orderId ? [\`order_\${orderId}\`, 'marketing_h1'] : ['marketing_h1']
   });
 }
 
+/**
+ * Email Marketing : Relance H+24 (Le Prix du Silence)
+ * Design : Bannière silhouette ambitieuse + accent gauche or
+ */
 export async function sendMarketingReminderH24(customerEmail: string, productName: string, checkoutUrl: string, orderId?: string) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kheops-set-motivation.vercel.app';
   const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap');
-        body { margin: 0; padding: 0; background-color: #000000; font-family: 'Inter', Arial, sans-serif; color: #e4e4e7; }
-        .wrapper { padding: 40px 20px; }
-        .main { max-width: 600px; margin: 0 auto; background-color: #0a0a0a; border-left: 6px solid #eeb149; padding: 50px 40px; border-radius: 0 4px 4px 0; }
-        .header { font-size: 11px; font-weight: 900; letter-spacing: 6px; color: #71717a; text-transform: uppercase; margin-bottom: 30px; }
-        h1 { font-family: 'Anton', Impact, sans-serif; font-size: 42px; line-height: 1.1; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 30px 0; font-weight: normal; }
-        p { font-size: 16px; line-height: 1.6; margin-bottom: 24px; color: #d4d4d8; }
-        .quote { background-color: #18181b; border-left: 2px solid #eeb149; padding: 20px; font-style: italic; color: #a1a1aa; margin: 30px 0; font-size: 15px; }
-        .button { background-color: #ffffff; color: #000000 !important; padding: 20px 40px; text-decoration: none; font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 2px; display: inline-block; margin-top: 20px; border-radius: 2px; }
-      </style>
-    </head>
-    <body>
-      <div class="wrapper">
-        <div class="main">
-          <div class="header">RAPPEL H+24</div>
-          <h1>LE PRIX DE<br/><span style="color: #eeb149;">L'HÉSITATION.</span></h1>
-          <p>Pendant que tu doutes, d'autres bâtissent.</p>
-          <p>Le protocole <strong style="color: #ffffff;">${productName}</strong> n'est pas une option, c'est une nécessité pour ceux qui visent le sommet.</p>
-          <div class="quote">
-            "L'indécision est le voleur de l'opportunité. La stagnation est le salaire de la peur."
-          </div>
-          <p>Hier, tu as failli franchir le pas. Qu'est-ce qui t'a arrêté ? Le doute ? La complaisance ?</p>
-          <a href="${checkoutUrl}" class="button">ÉCRASER LE DOUTE</a>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;color:#e4e4e7;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#000000;">
+    <tr><td align="center" style="padding:30px 15px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#0a0a0a;border-radius:4px;overflow:hidden;">
+        <tr><td style="padding:0;"><img src="${siteUrl}/images/email/banner-h24.png" alt="L'Empire t'attend" width="600" style="display:block;width:100%;height:auto;border:0;" /></td></tr>
+        <tr><td style="padding:0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+            <td width="5" style="background-color:#eeb149;"></td>
+            <td style="padding:45px 40px 20px 35px;">
+              <p style="font-size:11px;letter-spacing:4px;color:#71717a;text-transform:uppercase;font-weight:700;margin:0 0 20px;">24 HEURES PLUS TARD</p>
+              <h1 style="font-size:30px;line-height:1.15;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin:0 0 30px;font-weight:900;">PENDANT QUE TU HÉSITES,<br/><span style="color:#eeb149;">D'AUTRES BÂTISSENT.</span></h1>
+              <p style="font-size:16px;line-height:1.7;color:#d4d4d8;margin:0 0 20px;">Hier, tu as failli franchir le pas. Le protocole <strong style="color:#ffffff;">${productName}</strong> était à portée de main.</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:25px 0;"><tr>
+                <td style="background-color:#18181b;border-left:3px solid #eeb149;padding:20px 25px;">
+                  <p style="font-size:15px;font-style:italic;color:#a1a1aa;margin:0;line-height:1.6;">"L'indécision est le voleur de l'opportunité.<br/>La stagnation est le salaire de la peur."</p>
+                </td>
+              </tr></table>
+              <p style="font-size:16px;line-height:1.7;color:#d4d4d8;margin:0 0 10px;">Qu'est-ce qui t'a arrêté ? <strong style="color:#ffffff;">Le doute ? La complaisance ?</strong></p>
+              <p style="font-size:16px;line-height:1.7;color:#d4d4d8;margin:0 0 30px;">Les bâtisseurs ne réfléchissent pas éternellement. <strong style="color:#eeb149;">Ils exécutent.</strong></p>
+              <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background-color:#ffffff;border-radius:2px;">
+                <a href="${checkoutUrl}" target="_blank" style="display:inline-block;padding:18px 45px;color:#000000;font-size:14px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;">ÉCRASER LE DOUTE ➔</a>
+              </td></tr></table>
+            </td>
+          </tr></table>
+        </td></tr>
+        <tr><td style="padding:0 40px;"><div style="border-top:1px solid #1f1f22;"></div></td></tr>
+        <tr><td style="padding:30px 40px;text-align:center;">
+          <p style="font-size:10px;color:#52525b;text-transform:uppercase;letter-spacing:3px;font-weight:700;margin:0;">BÂTIR SON EMPIRE. SANS CONCESSION.</p>
+          <p style="font-size:9px;color:#3f3f46;margin:10px 0 0;letter-spacing:1px;">Kheops Set Motivation — L'Ordre du Bâtisseur</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
+`;
 
   return sendEmail({
     to: customerEmail,
-    subject: `[KSM] Le prix de l'hésitation...`,
+    subject: \`[KSM] Pendant que tu hésites, d'autres bâtissent...\`,
     htmlContent,
-    tags: orderId ? [`order_${orderId}`, 'marketing_h24'] : ['marketing_h24']
+    tags: orderId ? [\`order_\${orderId}\`, 'marketing_h24'] : ['marketing_h24']
   });
 }
 
+/**
+ * Email Marketing : Relance H+72 (Dernier Signal)
+ * Design : Sablier doré + bordure or englobante, urgence maximale
+ */
 export async function sendMarketingReminderH72(customerEmail: string, productName: string, checkoutUrl: string, orderId?: string) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kheops-set-motivation.vercel.app';
   const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap');
-        body { margin: 0; padding: 0; background-color: #000000; font-family: 'Inter', Arial, sans-serif; }
-        .wrapper { padding: 40px 20px; }
-        .outer { max-width: 600px; margin: 0 auto; background-color: #eeb149; padding: 4px; border-radius: 4px; }
-        .inner { background-color: #0a0a0a; padding: 60px 40px; text-align: center; border-radius: 2px; }
-        h1 { font-family: 'Anton', Impact, sans-serif; font-size: 60px; line-height: 1; color: #eeb149; text-transform: uppercase; margin: 0 0 30px 0; letter-spacing: 1px; font-weight: normal; }
-        p { font-size: 18px; color: #e4e4e7; line-height: 1.5; margin-bottom: 24px; font-weight: 600; text-transform: uppercase; }
-        .subtext { font-size: 15px; color: #a1a1aa; text-transform: none; font-weight: normal; margin-bottom: 40px; }
-        .button { background-color: #eeb149; color: #000000 !important; padding: 22px 50px; text-decoration: none; font-weight: 900; font-size: 16px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; border-radius: 2px; }
-        .warning { color: #eeb149; font-size: 12px; margin-top: 40px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
-      </style>
-    </head>
-    <body>
-      <div class="wrapper">
-        <div class="outer">
-          <div class="inner">
-            <h1>DERNIER<br/>APPEL.</h1>
-            <p>Ton accès prioritaire au ${productName} expire dans quelques heures.</p>
-            <div class="subtext">Demain, le système réinitialisera ton lien sécurisé. Tu seras de retour à la case départ, avec ceux qui observent au lieu d'agir.</div>
-            <a href="${checkoutUrl}" class="button">SÉCURISER L'ACCÈS</a>
-            <div class="warning">C'EST MAINTENANT OU JAMAIS.</div>
-          </div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#000000;">
+    <tr><td align="center" style="padding:30px 15px;">
+      <table role="presentation" width="604" cellpadding="0" cellspacing="0" style="max-width:604px;width:100%;background-color:#eeb149;border-radius:4px;">
+        <tr><td style="padding:3px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a0a;border-radius:2px;overflow:hidden;">
+            <tr><td style="padding:0;"><img src="${siteUrl}/images/email/banner-h72.png" alt="Le temps presse" width="598" style="display:block;width:100%;height:auto;border:0;" /></td></tr>
+            <tr><td align="center" style="padding:40px 40px 15px;">
+              <p style="font-size:11px;letter-spacing:5px;color:#eeb149;text-transform:uppercase;font-weight:900;margin:0 0 20px;">⚠ NOTIFICATION FINALE</p>
+              <h1 style="font-size:42px;line-height:1;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin:0 0 25px;font-weight:900;">DERNIER<br/><span style="color:#eeb149;">APPEL.</span></h1>
+            </td></tr>
+            <tr><td style="padding:0 40px 20px;">
+              <p style="font-size:17px;line-height:1.6;color:#e4e4e7;margin:0 0 20px;text-align:center;font-weight:600;">Ton accès prioritaire au <strong style="color:#eeb149;">${productName}</strong> expire dans quelques heures.</p>
+              <p style="font-size:15px;line-height:1.6;color:#a1a1aa;margin:0 0 20px;text-align:center;">Demain, le système réinitialisera ton lien sécurisé. Tu seras de retour à la case départ, avec ceux qui observent au lieu d'agir.</p>
+            </td></tr>
+            <tr><td align="center" style="padding:15px 40px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background-color:#eeb149;border-radius:2px;">
+                <a href="${checkoutUrl}" target="_blank" style="display:inline-block;padding:20px 50px;color:#000000;font-size:16px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:3px;">SÉCURISER L'ACCÈS ➔</a>
+              </td></tr></table>
+            </td></tr>
+            <tr><td align="center" style="padding:15px 40px 40px;">
+              <p style="font-size:12px;color:#eeb149;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0;">C'EST MAINTENANT OU JAMAIS.</p>
+            </td></tr>
+            <tr><td style="padding:0 40px;"><div style="border-top:1px solid #1f1f22;"></div></td></tr>
+            <tr><td style="padding:25px 40px;text-align:center;">
+              <p style="font-size:9px;color:#3f3f46;letter-spacing:1px;margin:0;">Kheops Set Motivation — L'Ordre du Bâtisseur</p>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
+`;
 
   return sendEmail({
     to: customerEmail,
-    subject: `[FINAL] Ton accès au ${productName} expire.`,
+    subject: \`[FINAL] Dernier appel : ton accès au \${productName} expire.\`,
     htmlContent,
-    tags: orderId ? [`order_${orderId}`, 'marketing_h72'] : ['marketing_h72']
+    tags: orderId ? [\`order_\${orderId}\`, 'marketing_h72'] : ['marketing_h72']
   });
 }
 
