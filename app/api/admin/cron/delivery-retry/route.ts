@@ -20,7 +20,14 @@ export async function GET(req: Request) {
   }
 
   try {
-    // Commandes payées mais non livrées (PENDING ou FAILED), créées il y a moins de 30 jours
+    // On ne retente QUE les orders où le nouveau système a explicitement enregistré un échec.
+    // Critère : delivery_error IS NOT NULL (= le code a tenté et Brevo/storage a échoué).
+    //
+    // On exclut volontairement les orders avec delivery_sent_at IS NULL ET delivery_error IS NULL :
+    // ce sont soit des anciennes commandes livrées par l'ancien code (backfill à faire via SQL),
+    // soit des commandes PENDING qui ne sont pas encore payées.
+    //
+    // Fenêtre : 30 jours pour éviter de traiter des orders très anciennes.
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -28,7 +35,8 @@ export async function GET(req: Request) {
       .from('orders')
       .select('id')
       .eq('status', 'PAID')
-      .neq('delivery_status', 'SENT')
+      .eq('delivery_status', 'FAILED')         // uniquement les échecs explicites du nouveau système
+      .not('delivery_error', 'is', null)        // double-sécurité : delivery_error renseigné
       .gt('created_at', thirtyDaysAgo.toISOString());
 
     if (error) throw error;
