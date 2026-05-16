@@ -14,6 +14,13 @@ export async function POST(req: Request) {
       );
     }
 
+    // Validation stricte du format email côté serveur
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(String(userEmail).trim())) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
+    }
+    const sanitizedEmail = String(userEmail).trim().toLowerCase();
+
     // 1. Validate Product
     const product = tools.find((t) => t.id === productId);
     if (!product) {
@@ -30,7 +37,7 @@ export async function POST(req: Request) {
     const { data: existingUser } = await supabase
       .from('users')
       .select('id')
-      .eq('email', userEmail)
+      .eq('email', sanitizedEmail)
       .single();
 
     if (existingUser) {
@@ -39,7 +46,7 @@ export async function POST(req: Request) {
       // Create new user
       const { data: newUser, error: insertError } = await supabase
         .from('users')
-        .insert([{ email: userEmail }])
+        .insert([{ email: sanitizedEmail }])
         .select('id')
         .single();
         
@@ -68,7 +75,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Database error creating order' }, { status: 500 });
     }
 
-    // 4. Add Order Items
+    // 4. Add Order Items (critique : sans order_item, la livraison webhook échoue silencieusement)
     const { error: itemError } = await supabase
       .from('order_items')
       .insert([{
@@ -79,6 +86,9 @@ export async function POST(req: Request) {
 
     if (itemError) {
       console.error('Error creating order item:', itemError);
+      // Pas de rollback Supabase JS — on marque l'ordre comme FAILED pour éviter une commande orpheline
+      await supabase.from('orders').update({ status: 'FAILED' }).eq('id', order.id);
+      return NextResponse.json({ error: 'Database error creating order item' }, { status: 500 });
     }
 
     // 5. Generate Payment Link via Provider
@@ -91,7 +101,7 @@ export async function POST(req: Request) {
       productPrice: numericPrice,
       productDescription: product.desc,
       productPictureUrl: `${baseUrl}${product.image}`,
-      userEmail: userEmail
+      userEmail: sanitizedEmail
     });
 
     if (!paymentResponse.success || !paymentResponse.paymentUrl) {

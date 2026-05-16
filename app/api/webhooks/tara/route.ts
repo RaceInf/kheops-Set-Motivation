@@ -96,23 +96,31 @@ export async function POST(req: Request) {
 
     // 6. Update Payment and Order status
     if (paymentEvent.status === 'SUCCESS') {
-      // Use a transaction or sequential updates. 
-      // Supabase JS doesn't do true transactions from edge, so we update sequentially.
-      
+      // Protection race condition : on met à jour uniquement si status est encore PENDING.
+      // Deux webhooks simultanés ne pourront pas tous les deux passer ce filtre.
+      const { data: updatedRows, error: orderUpdateError } = await supabase
+        .from('orders')
+        .update({ status: 'PAID' })
+        .eq('id', order.id)
+        .eq('status', 'PENDING')
+        .select('id');
+
+      if (orderUpdateError || !updatedRows || updatedRows.length === 0) {
+        // Un autre webhook a déjà traité cette commande (race condition bloquée)
+        if (webhookEvent) {
+          await supabase.from('webhook_events').update({ status: 'PROCESSED', processed_at: new Date().toISOString() }).eq('id', webhookEvent.id);
+        }
+        return NextResponse.json({ success: true, message: 'Order already processed (concurrent webhook)' });
+      }
+
       // Update Payment Record
       await supabase
         .from('payments')
-        .update({ 
-          status: 'SUCCESS', 
-          provider_reference: paymentEvent.providerReference 
+        .update({
+          status: 'SUCCESS',
+          provider_reference: paymentEvent.providerReference
         })
         .eq('order_id', order.id);
-
-      // 6.2 Update Order Record
-      await supabase
-        .from('orders')
-        .update({ status: 'PAID' })
-        .eq('id', order.id);
 
       // --- LIVRAISON PAR EMAIL (BREVO) ---
       try {

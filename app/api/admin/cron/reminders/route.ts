@@ -17,7 +17,8 @@ export async function GET(req: Request) {
   // Optionnel : Vérifier une clé secrète pour éviter les appels non autorisés
   const { searchParams } = new URL(req.url);
   const key = searchParams.get('key');
-  if (key !== process.env.CRON_SECRET && process.env.NODE_ENV === 'production') {
+  // Vérification systématique, peu importe l'environnement
+  if (!process.env.CRON_SECRET || key !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -61,10 +62,12 @@ export async function GET(req: Request) {
 
       // Vérifier quels rappels ont déjà été envoyés pour cette commande
       // On utilise la table webhook_events comme log (type marketing_reminder)
+      // On ne compte que les relances RÉUSSIES (PROCESSED) pour autoriser les retries sur échec
       const { data: sentLogs } = await supabase
         .from('webhook_events')
         .select('event_type')
         .eq('provider', 'tara')
+        .eq('status', 'PROCESSED')
         .ilike('event_type', 'marketing_reminder%')
         .filter('payload->>orderId', 'eq', order.id);
 
@@ -93,7 +96,10 @@ export async function GET(req: Request) {
       } catch (err: any) {
         console.error(`Failed to send reminder to ${customerEmail}:`, err);
         errorOccurred = err.message;
-        reminderSent = hoursElapsed >= 72 ? 'marketing_reminder_h72' : hoursElapsed >= 24 ? 'marketing_reminder_h24' : 'marketing_reminder_h1';
+        // On détermine quel type de relance a échoué pour le logger avec status FAILED
+        // Ceci ne compte PAS comme "envoyé" (filtré via status=PROCESSED au prochain run)
+        const failedType = hoursElapsed >= 72 ? 'marketing_reminder_h72' : hoursElapsed >= 24 ? 'marketing_reminder_h24' : 'marketing_reminder_h1';
+        reminderSent = failedType;
       }
 
       if (reminderSent) {

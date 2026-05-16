@@ -9,8 +9,10 @@ export const getVisitorId = () => {
   let visitorId = sessionStorage.getItem('ksm_visitor_id');
 
   if (!visitorId) {
-    // Si pas d'ID, on en génère un nouveau
-    visitorId = 'v_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    // Génération cryptographiquement sûre (Math.random() est prédictible)
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    visitorId = 'v_' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
     sessionStorage.setItem('ksm_visitor_id', visitorId);
   }
 

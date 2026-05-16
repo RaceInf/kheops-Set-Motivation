@@ -91,23 +91,25 @@ export class TaraProvider implements PaymentProvider {
   }
 
   async verifyWebhookSignature(req: Request): Promise<WebhookValidationResult> {
-    // TODO: Implémenter la vérification cryptographique réelle selon la NOUVELLE doc Tara.
-    // Habituellement, cela implique de lire le header "x-tara-signature" et de le comparer
-    // avec un HMAC SHA256 du body brut en utilisant this.webhookSecret.
-    
+    // Tara Money envoie le webhook secret brut dans le header x-tara-signature.
+    // Si TARA_WEBHOOK_SECRET est configuré, on le vérifie systématiquement (prod et dev).
+    // Cela protège contre les appels frauduleux qui créeraient de fausses commandes PAID.
+
     try {
-      const payload = await req.json();
-      
-      // En attendant la doc officielle, on simule une validation basique si un secret est configuré
-      // IMPORTANT: À remplacer par la vraie validation HMAC.
-      const signature = req.headers.get('x-tara-signature');
-      
-      // Check minimal de sécurité en fallback
-      if (this.webhookSecret && signature !== this.webhookSecret && process.env.NODE_ENV === 'production') {
-        // Mode strict en production si on n'a pas la vraie doc
-        console.warn('Webhook signature mismatch or missing');
-        // return { isValid: false, payload, error: 'Invalid signature' }; 
-        // Commenté temporairement pour le mode dev
+      const rawBody = await req.text();
+      let payload;
+      try {
+        payload = JSON.parse(rawBody);
+      } catch {
+        return { isValid: false, payload: null, error: 'Invalid JSON payload' };
+      }
+
+      if (this.webhookSecret) {
+        const signature = req.headers.get('x-tara-signature');
+        if (!signature || signature !== this.webhookSecret) {
+          console.warn('[Webhook] Signature invalide ou absente:', { received: signature ? 'présente' : 'absente' });
+          return { isValid: false, payload: null, error: 'Invalid webhook signature' };
+        }
       }
 
       return { isValid: true, payload };
