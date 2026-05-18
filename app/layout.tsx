@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { Suspense } from 'react';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import FacebookPixel from '@/components/analytics/FacebookPixel';
+import AnalyticsWrapper from '@/components/analytics/AnalyticsWrapper';
 import WhatsAppWidget from '@/components/WhatsAppWidget';
 import SalesFlux from '@/components/SalesFlux';
 import PageTracker from '@/components/PageTracker';
@@ -94,53 +95,59 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-        {/* Brevo Tracker */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                window.Brevo = window.Brevo || [];
-                Brevo.push([
-                  "init",
-                  {
-                    client_key: "06cm75fcagp0mmmp7twxwybg",
-                  }
-                ]);
-              })();
-            `,
-          }}
-        />
-        <script src="https://cdn.brevo.com/js/sdk-loader.js" async />
       </head>
       <body className="bg-black text-white antialiased selection:bg-[#eeb149] selection:text-black font-sans" suppressHydrationWarning>
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
+        <AnalyticsWrapper>
+          {/* Brevo Tracker */}
+          <Script
+            id="brevo-tracker"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  window.Brevo = window.Brevo || [];
+                  Brevo.push([
+                    "init",
+                    {
+                      client_key: "06cm75fcagp0mmmp7twxwybg",
+                    }
+                  ]);
+                })();
+              `,
+            }}
+          />
+          <Script src="https://cdn.brevo.com/js/sdk-loader.js" strategy="afterInteractive" />
 
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
-                  page_path: window.location.pathname,
-                  environment: '${process.env.NODE_ENV}',
-                });
-              `}
-            </Script>
-          </>
-        )}
-        <Suspense fallback={null}>
-          <GoogleAnalytics />
-          <FacebookPixel />
-        </Suspense>
+          {process.env.NEXT_PUBLIC_GA_ID && (
+            <>
+              <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+                strategy="afterInteractive"
+              />
+              <Script id="google-analytics" strategy="afterInteractive">
+                {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+
+                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                    page_path: window.location.pathname,
+                    environment: '${process.env.NODE_ENV}',
+                  });
+                `}
+              </Script>
+            </>
+          )}
+          <Suspense fallback={null}>
+            <GoogleAnalytics />
+            <FacebookPixel />
+          </Suspense>
+          <PageTracker />
+          <WhatsAppWidget />
+          <SalesFlux />
+        </AnalyticsWrapper>
+
         {children}
-        <PageTracker />
-        <WhatsAppWidget />
-        <SalesFlux />
       </body>
     </html>
   );

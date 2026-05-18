@@ -401,7 +401,7 @@ export default async function ToolPage({ params }: PageProps) {
       </main>
 
       <Footer maxWidth="1200px" />
-      <StickyCTA targetId="commande" />
+      <StickyCTA targetId="commande" price={tool.price} />
     </div>
     </>
   );
