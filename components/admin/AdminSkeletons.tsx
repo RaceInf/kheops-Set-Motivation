@@ -42,10 +42,12 @@ export function TableSkeleton({ rows = 5, columns = 5 }: { rows?: number; column
 }
 
 export function ChartSkeleton({ height = 220 }: { height?: number }) {
+  // Déterministe pour éviter le mismatch d'hydratation SSR React/Next.js
+  const heights = [35, 60, 40, 25, 75, 30, 55, 45, 30, 65, 35, 70, 50, 60, 45, 55, 30, 65, 40, 75];
   return (
     <div className="w-full flex items-end gap-1" style={{ height }}>
       {Array.from({ length: 20 }).map((_, i) => (
-        <Skeleton key={i} className="flex-1 rounded-t-sm" style={{ height: `${Math.random() * 60 + 20}%` }} />
+        <Skeleton key={i} className="flex-1 rounded-t-sm" style={{ height: `${heights[i % heights.length]}%` }} />
       ))}
     </div>
   );
