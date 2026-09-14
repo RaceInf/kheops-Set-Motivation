@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import Script from 'next/script';
 import { Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/next';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import FacebookPixel from '@/components/analytics/FacebookPixel';
 import AnalyticsWrapper from '@/components/analytics/AnalyticsWrapper';
@@ -148,6 +149,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         </AnalyticsWrapper>
 
         {children}
+        <Analytics />
       </body>
     </html>
   );
