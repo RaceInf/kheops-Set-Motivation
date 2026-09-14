@@ -156,21 +156,21 @@ export class TaraProvider implements PaymentProvider {
   }
 
   parseWebhookPayload(payload: any): PaymentEvent {
-    // TODO: Mapper exactement selon le payload webhook envoyé par Tara (nouvelle API).
-    // Structure hypothétique basée sur les standards du marché.
+    // Mapping des statuts officiels Tara Money :
+    // - approved : Paiement confirmé avec succès par le client
+    // - rejected : Paiement échoué, annulé ou expiré
+    // - pending  : Paiement en attente de validation par le client
+    const taraStatus = payload.status?.toLowerCase() || payload.event?.toLowerCase() || '';
     
-    const taraStatus = payload.status?.toLowerCase();
-    const status = taraStatus === 'paid' || taraStatus === 'success' 
+    const status = (taraStatus === 'approved' || taraStatus === 'paid' || taraStatus === 'success') 
       ? 'SUCCESS' 
-      : taraStatus === 'failed' 
+      : (taraStatus === 'rejected' || taraStatus === 'failed' || taraStatus === 'cancelled' || taraStatus === 'canceled' || taraStatus === 'expired')
         ? 'FAILED' 
         : 'PENDING';
 
     return {
-      providerReference: payload.transactionId || payload.id || 'unknown_ref',
-      // Dans notre implémentation actuelle, on passe orderId dans l'URL de retour
-      // Il faut l'extraire du payload s'il le renvoie (ex: metadata.orderId)
-      orderId: payload.metadata?.orderId || payload.orderId || '',
+      providerReference: payload.transactionId || payload.id || payload.reference || 'unknown_ref',
+      orderId: payload.metadata?.orderId || payload.orderId || payload.custom_fields?.orderId || '',
       status: status,
       amount: payload.amount || 0,
       rawPayload: payload

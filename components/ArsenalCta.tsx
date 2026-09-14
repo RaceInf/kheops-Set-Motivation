@@ -26,8 +26,8 @@ export default function ArsenalCta({
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !name || !whatsapp) {
-      setError("Veuillez remplir tous les champs obligatoires.");
+    if (!email || !name) {
+      setError("Veuillez remplir votre nom et votre e-mail.");
       return;
     }
 
@@ -50,7 +50,7 @@ export default function ArsenalCta({
           productId, 
           userEmail: email,
           customerName: name,
-          whatsappNumber: whatsapp.startsWith('+') ? whatsapp : `+${whatsapp}`
+          whatsappNumber: whatsapp ? (whatsapp.startsWith('+') ? whatsapp : `+${whatsapp}`) : undefined
         }),
       });
 
@@ -91,10 +91,10 @@ export default function ArsenalCta({
             />
           </div>
 
-          {/* Champ WhatsApp avec Drapeaux */}
+          {/* Champ WhatsApp avec Drapeaux (Optionnel) */}
           <div className="flex flex-col gap-2 ksm-phone-input">
             <label className="text-[10px] uppercase tracking-widest text-white/50 flex items-center gap-2">
-              <MessageSquare className="w-3 h-3 text-gold" /> Numéro WhatsApp
+              <MessageSquare className="w-3 h-3 text-gold" /> Numéro WhatsApp <span className="text-white/30 lowercase">(optionnel)</span>
             </label>
             <PhoneInput
               country={"cm"}
@@ -112,10 +112,7 @@ export default function ArsenalCta({
               buttonClass="ksm-phone-button"
               dropdownClass="ksm-phone-dropdown"
               searchClass="ksm-phone-search"
-              placeholder="+237 ..."
-              inputProps={{
-                required: true,
-              }}
+              placeholder="+237 (optionnel)..."
             />
             
             <style jsx global>{`
@@ -268,7 +265,7 @@ export default function ArsenalCta({
         
         <button 
           type="submit"
-          disabled={isLoading || !email || !name || whatsapp.length < 6}
+          disabled={isLoading || !email || !name || (whatsapp.length > 0 && whatsapp.length < 6)}
           className="w-full py-4 bg-gold text-black font-black text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors flex justify-center items-center gap-3 disabled:opacity-50"
         >
           {isLoading ? (

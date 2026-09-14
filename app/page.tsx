@@ -22,7 +22,7 @@ export default function Page() {
     "sameAs": [
       "https://www.facebook.com/KheopsSetMotivation",
       "https://www.youtube.com/@kheopset.motivation",
-      "https://wa.me/237654172703"
+      "https://chat.whatsapp.com/JM5y9X4rV3lEmds6fVr5vz"
     ]
   };
 

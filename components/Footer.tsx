@@ -57,14 +57,14 @@ export default function Footer({ maxWidth = "1600px" }: FooterProps) {
                 Facebook
               </a>
               <a 
-                href="https://wa.me/237654172703" 
+                href="https://chat.whatsapp.com/JM5y9X4rV3lEmds6fVr5vz" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                aria-label="WhatsApp Kheops Set Motivation"
-                onClick={() => handleSocialClick('WhatsApp')}
+                aria-label="Groupe WhatsApp Kheops Set Motivation"
+                onClick={() => handleSocialClick('Groupe WhatsApp')}
                 className="hover:text-gold transition-colors"
               >
-                WhatsApp
+                Groupe WhatsApp
               </a>
               <a 
                 href="https://www.youtube.com/@kheopset.motivation" 

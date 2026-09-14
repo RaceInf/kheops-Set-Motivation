@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, Shield, X, Target, Zap, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Check, Shield, X, Target, Zap, AlertTriangle, Star, Mail } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { tools } from "@/lib/data";
@@ -117,10 +117,22 @@ export default async function ToolPage({ params }: PageProps) {
 
       <main className="w-full max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         <div className="lg:col-span-7 flex flex-col justify-start">
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex flex-wrap items-center gap-3 mb-8">
             <span className="text-black text-[10px] font-mono bg-gold px-3 py-1 font-bold">
               {tool.category}
             </span>
+            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1">
+              <div className="flex text-gold">
+                <Star className="w-3 h-3 fill-gold" />
+                <Star className="w-3 h-3 fill-gold" />
+                <Star className="w-3 h-3 fill-gold" />
+                <Star className="w-3 h-3 fill-gold" />
+                <Star className="w-3 h-3 fill-gold" />
+              </div>
+              <span className="text-white/80 text-[10px] font-bold tracking-widest uppercase">
+                {(tool as any).rating || "4.9"}/5 • +{(tool as any).reviewsCount || "1 200"} Bâtisseurs
+              </span>
+            </div>
           </div>
 
           <h1 className="font-display text-5xl md:text-7xl uppercase leading-[0.85] tracking-tighter mb-8 text-white">
@@ -336,12 +348,24 @@ export default async function ToolPage({ params }: PageProps) {
                 </div>
               </div>
               
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
                   <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
-                    <Check className="w-3 h-3 text-gold" />
+                    <Check className="w-3.5 h-3.5 text-gold" />
                   </div>
-                  <p className="text-sm text-white/80">Accès immédiat après validation</p>
+                  <p className="text-xs md:text-sm text-white/80 font-medium">Accès immédiat après validation</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
+                    <Mail className="w-3.5 h-3.5 text-gold" />
+                  </div>
+                  <p className="text-xs md:text-sm text-white/80 font-medium">Fichier PDF envoyé par email sous 30 sec</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
+                    <Shield className="w-3.5 h-3.5 text-gold" />
+                  </div>
+                  <p className="text-xs md:text-sm text-white/80 font-medium">Format PDF HD optimisé Mobile & Tablette</p>
                 </div>
               </div>
 

@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       .from('users')
       .select('id')
       .eq('email', sanitizedEmail)
-      .single();
+      .maybeSingle();
 
     if (existingUser) {
       userId = existingUser.id;
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
         
       if (insertError || !newUser) {
         console.error('Error creating user:', insertError);
-        return NextResponse.json({ error: 'Database error creating user' }, { status: 500 });
+        return NextResponse.json({ error: `Database error creating user: ${insertError?.message || 'Unknown error'}` }, { status: 500 });
       }
       userId = newUser.id;
     }
